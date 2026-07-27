@@ -15,6 +15,15 @@ namespace Commands
         const dpp::interaction_create_t &event
     );
 
+    //////////////////////////
+    ///// journalism.cpp /////
+    //////////////////////////
+
+    void journalism
+    (
+        const dpp::interaction_create_t &event
+    );
+
     /////////////////////
     ///// kick.cpp //////
     /////////////////////

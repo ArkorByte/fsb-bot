@@ -29,6 +29,8 @@ void Events::interaction_create
     {
         if (event.command.get_command_name() == "ban")
             Commands::ban(bot, event);
+        else if (event.command.get_command_name() == "journalism")
+            Commands::journalism(event);
         else if (event.command.get_command_name() == "kick")
             Commands::kick(bot, event);
         else if (event.command.get_command_name() == "ping")

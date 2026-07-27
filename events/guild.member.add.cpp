@@ -38,6 +38,12 @@ void Events::guild_member_add
         Utils::Logs::log("New member on guild " + std::to_string(guild_id) + " -> " + std::to_string(user_id) + ".");
         Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild = " + std::to_string(guild_id));
 
+        if (config.size() < 1)
+        {
+            Utils::Logs::log("CONFIG NOT AVAILABLE FOR SERVER " + std::to_string(guild_id) + "! TODO: auto fix this error.");
+            return;
+        }
+
         const std::string member_role = config[0]["member_role"];
         const std::string stateless_role = config[0]["stateless_role"];
         const std::string welcome_channel = config[0]["welcome_channel"];

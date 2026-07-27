@@ -38,8 +38,11 @@ void Commands::ban
 {
     const dpp::snowflake user_id = std::get<dpp::snowflake>(event.get_parameter("member"));
     const std::string reason = std::get<std::string>(event.get_parameter("reason"));
+    const bool silent = std::get<bool>(event.get_parameter("silent"));
 
-    if (user_id == event.command.usr.id)
+    const dpp::snowflake executer_id = event.command.usr.id;
+
+    if (user_id == executer_id)
     {
         event.reply(dpp::message(":warning: You are not allowed to **ban yourself**!").set_flags(dpp::m_ephemeral));
         return;
@@ -86,7 +89,7 @@ void Commands::ban
     const dpp::guild_member member = member_it -> second;
     const dpp::permission member_permissions = guild -> base_permissions(member);
 
-    if ((member_permissions & dpp::p_administrator) && event.command.usr.id != guild -> owner_id)
+    if ((member_permissions & dpp::p_administrator) && executer_id != guild -> owner_id)
     {
         event.reply(dpp::message(":warning: Only the **server owner** is allowed to ban administrators!").set_flags(dpp::m_ephemeral));
         return;
@@ -95,7 +98,7 @@ void Commands::ban
     const uint8_t highest_member_role = Utils::Miscellaneous::highest_role_position(member);
     const uint8_t highest_executer_role = Utils::Miscellaneous::highest_role_position(executer);
 
-    if (highest_member_role >= highest_executer_role && event.command.usr.id != guild -> owner_id)
+    if (highest_member_role >= highest_executer_role && executer_id != guild -> owner_id)
     {
         event.reply(dpp::message(":warning: You **can not** ban this member!").set_flags(dpp::m_ephemeral));
         return;
@@ -126,7 +129,7 @@ void Commands::ban
         return;
     }
 
-    bot.set_audit_reason(reason);
+    bot.set_audit_reason("[" + std::to_string(executer_id) + "] " + reason);
 
     bot.guild_ban_add(guild_id, user_id, 0, [=](const dpp::confirmation_callback_t &callback)
     {
@@ -136,7 +139,7 @@ void Commands::ban
             return;
         }
 
-        event.reply(dpp::message(":white_check_mark: <@" + std::to_string(user_id) + "> has been **successfully banned**!").set_flags(dpp::m_ephemeral));
-        Utils::Logs::log("[ban] " + std::to_string(event.command.usr.id) + " banned " + std::to_string(user_id) + " from " + std::to_string(guild_id) +  " for \"" + reason + "\"!");
+        event.reply(dpp::message(":white_check_mark: <@" + std::to_string(user_id) + "> has been **successfully** banned!").set_flags(silent ? dpp::m_ephemeral : 0));
+        Utils::Logs::log("[ban] " + std::to_string(executer_id) + " banned " + std::to_string(user_id) + " from " + std::to_string(guild_id) +  " for \"" + reason + "\"!");
     });
 }
