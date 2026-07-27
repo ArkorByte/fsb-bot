@@ -2,7 +2,6 @@
 
 #include "../utils/utils.hpp"
 
-#include <dpp/appcommand.h>
 #include <dpp/dpp.h>
 #include <string>
 #include <vector>
@@ -191,7 +190,7 @@ void Events::ready
             dpp::slashcommand resolution_command("resolution", "Create a new United Nations resolution.", bot.me.id);
 
                 // Subcommand /resolution law.
-                dpp::command_option resolution_law(dpp::co_sub_command, "law", "Edit international laws.");
+                dpp::command_option resolution_law(dpp::co_sub_command, "law", "Propose to edit international laws.");
                 resolution_law.add_option(dpp::command_option(dpp::co_string, "action", "Action to make.", true).set_auto_complete(true));
                 resolution_law.add_option(dpp::command_option(dpp::co_string, "law_id", "ID of the law or to attribute.", true).set_auto_complete(true));
                 resolution_command.add_option(resolution_law);
@@ -200,6 +199,7 @@ void Events::ready
                 dpp::command_option resolution_sanction(dpp::co_sub_command, "sanction", "Propose a sanction against another nation.");
                 resolution_sanction.add_option(dpp::command_option(dpp::co_string, "nation_id", "Nation to sanction.", true).set_auto_complete(true));
                 resolution_sanction.add_option(dpp::command_option(dpp::co_string, "sanction_type", "Sanction to apply.", true).set_auto_complete(true));
+                resolution_sanction.add_option(dpp::command_option(dpp::co_string, "duration", "Duration of sanction.", true).set_auto_complete(true));
                 resolution_command.add_option(resolution_sanction);
 
             slash_commands.push_back(resolution_command);
