@@ -2,6 +2,7 @@
 
 #include "../utils/utils.hpp"
 
+#include <dpp/appcommand.h>
 #include <dpp/dpp.h>
 #include <string>
 #include <vector>
@@ -188,6 +189,11 @@ void Events::ready
 
             // Command /resolution.
             dpp::slashcommand resolution_command("resolution", "Create a new United Nations resolution.", bot.me.id);
+
+                // Subcommand /resolution membership.
+                dpp::command_option resolution_membership(dpp::co_sub_command, "membership", "Propose to add a country to the United Nations.");
+                resolution_membership.add_option(dpp::command_option(dpp::co_string, "nation_id", "Nation to add.", true).set_auto_complete(true));
+                resolution_command.add_option(resolution_membership);
 
                 // Subcommand /resolution law.
                 dpp::command_option resolution_law(dpp::co_sub_command, "law", "Propose to edit international laws.");
