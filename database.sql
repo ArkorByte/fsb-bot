@@ -44,18 +44,14 @@ CREATE TABLE nationality (
     nation_id VARCHAR(30) DEFAULT 0,
     rank TINYINT DEFAULT 0,
     last_rank_update BIGINT DEFAULT 0,
-    joining_time BIGINT DEFAULT 0,
-    FOREIGN KEY (nation_id) REFERENCES nations(nation_id) ON DELETE SET NULL
+    joining_time BIGINT DEFAULT 0
 );
 
 CREATE TABLE relations (
     defining_nation VARCHAR(30) NOT NULL,
     targeted_nation VARCHAR(30) NOT NULL,
     relation_score TINYINT DEFAULT 50,
-    PRIMARY KEY (defining_nation, targeted_nation),
-    FOREIGN KEY (defining_nation) REFERENCES nations(nation_id) ON DELETE CASCADE,
-    FOREIGN KEY (targeted_nation) REFERENCES nations(nation_id) ON DELETE CASCADE
-);
+    PRIMARY KEY (defining_nation, targeted_nation)
 
 CREATE TABLE sanctions (
     resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -72,10 +68,8 @@ CREATE TABLE sanctions (
     vote_start BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL,
     vote_duration VARCHAR(3) NOT NULL,
     vote_end BIGINT NOT NULL,
-    votes_for TEXT DEFAULT '',
-    votes_against TEXT DEFAULT '',
-    FOREIGN KEY (nation_id) REFERENCES nations(nation_id) ON DELETE CASCADE,
-    FOREIGN KEY (sanctioned_nation) REFERENCES nations(nation_id) ON DELETE CASCADE
+    votes_for TEXT DEFAULT "",
+    votes_against TEXT DEFAULT ""
 );
 
 CREATE TABLE laws (
@@ -88,9 +82,8 @@ CREATE TABLE laws (
     vote_start BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL,
     vote_duration VARCHAR(3) NOT NULL,
     vote_end BIGINT NOT NULL,
-    votes_for TEXT DEFAULT '',
-    votes_against TEXT DEFAULT '',
-    FOREIGN KEY (nation_id) REFERENCES nations(nation_id) ON DELETE CASCADE
+    votes_for TEXT DEFAULT "",
+    votes_against TEXT DEFAULT ""
 );
 
 CREATE TABLE un_membership (
@@ -101,10 +94,8 @@ CREATE TABLE un_membership (
     vote_start BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL,
     vote_duration VARCHAR(3) NOT NULL,
     vote_end BIGINT NOT NULL,
-    votes_for TEXT DEFAULT '',
-    votes_against TEXT DEFAULT '',
-    FOREIGN KEY (nation_id) REFERENCES nations(nation_id) ON DELETE CASCADE,
-    FOREIGN KEY (invited_by) REFERENCES nations(nation_id) ON DELETE RESTRICT
+    votes_for TEXT DEFAULT "",
+    votes_against TEXT DEFAULT ""
 );
 
 CREATE TABLE journalism (
