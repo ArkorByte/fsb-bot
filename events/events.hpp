@@ -6,6 +6,16 @@
 
 namespace Events
 {
+    ////////////////////////////
+    ///// button.click.cpp /////
+    ////////////////////////////
+
+    void button_click
+    (
+        dpp::cluster &bot,
+        MYSQL*       &database
+    );
+
     ///////////////////////////
     ///// form.submit.cpp /////
     ///////////////////////////

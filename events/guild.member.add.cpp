@@ -1,7 +1,6 @@
 #include "events.hpp"
 
 #include "../utils/utils.hpp"
-#include "../utils/database/utils.database.hpp"
 
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>

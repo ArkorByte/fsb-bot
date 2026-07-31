@@ -44,13 +44,14 @@ int main()
     dpp::cluster bot(token, intents);
 
     Events::ready(bot);
+    Events::message_create(bot);
 
     Events::guild_member_add(bot, database);
     Events::guild_member_remove(bot);
 
     Events::interaction_create(bot, database);
     Events::form_submit(bot, database);
-    Events::message_create(bot);
+    Events::button_click(bot, database);
 
     bot.start(dpp::st_wait);
     return 0;

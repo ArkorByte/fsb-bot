@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <dpp/dpp.h>
+#include <dpp/message.h>
 #include <mysql/mysql.h>
 #include <string>
 
@@ -56,7 +57,7 @@ void Modals::journalism
     if (nation.size() == 0)
     {
         event.reply(dpp::message(":warning: Something went **wrong**!").set_flags(dpp::m_ephemeral));
-        Utils::Logs::log("FIX NEEDED: Nation ID " + nation_id + " missing in database (modal of /journalism).");
+        Utils::Logs::log("FIX NEEDED: Nation ID " + nation_id + " missing in database.");
         return;
     }
 
@@ -130,6 +131,13 @@ void Modals::journalism
     const int64_t journalism_channel = std::get<int64_t>(config[0]["journalism_channel"]);
 
     if (dpp::find_channel(journalism_channel) -> guild_id == guild_id)
-        bot.message_create(dpp::message(journalism_channel, embed).add_component(buttons));
-    else Utils::Logs::log("FIX NEEDED, journalism_channel ID is not valid!");
+    {
+        bot.message_create(dpp::message(journalism_channel, "||" + std::to_string(user_id) + "." + nation_id + "||").add_embed(embed).add_component(buttons));
+        event.reply(dpp::message(":white_check_mark: Your post has been punished!").set_flags(dpp::m_ephemeral));
+    }
+    else
+    {
+        Utils::Logs::log("FIX NEEDED, journalism_channel ID is not valid!");
+        event.reply(dpp::message(":warning: Something went wrong finding the journalism channel!").set_flags(dpp::m_ephemeral));
+    };
 }
