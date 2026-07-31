@@ -12,7 +12,8 @@ namespace Events
 
     void form_submit
     (
-        dpp::cluster &bot
+        dpp::cluster &bot,
+        MYSQL*       &database
     );
 
     ////////////////////////////////

@@ -208,7 +208,7 @@ void Events::ready
                 resolution_sanction.add_option(dpp::command_option(dpp::co_string, "nation_id", "Nation to sanction.", true).set_auto_complete(true));
                 resolution_sanction.add_option(dpp::command_option(dpp::co_string, "sanction_type", "Sanction to apply.", true).set_auto_complete(true));
                 resolution_sanction.add_option(dpp::command_option(dpp::co_string, "duration", "Duration of sanction.", true).set_auto_complete(true));
-                resolution_law.add_option(dpp::command_option(dpp::co_string, "vote_duration", "Time to vote.", true).set_auto_complete(true));
+                resolution_sanction.add_option(dpp::command_option(dpp::co_string, "vote_duration", "Time to vote.", true).set_auto_complete(true));
                 resolution_command.add_option(resolution_sanction);
 
             slash_commands.push_back(resolution_command);

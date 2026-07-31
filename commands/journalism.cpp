@@ -19,7 +19,7 @@ void Commands::journalism
     const dpp::interaction_create_t &event
 )
 {
-    dpp::interaction_modal_response modal("journalism_modal", "Create new article");
+    dpp::interaction_modal_response modal("journalism_modal", "Post new article");
 
     modal.add_component
     (

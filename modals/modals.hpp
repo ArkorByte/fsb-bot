@@ -2,6 +2,7 @@
 #define MODALS_HPP
 
 #include <dpp/dpp.h>
+#include <mysql/mysql.h>
 
 namespace Modals
 {
@@ -11,8 +12,9 @@ namespace Modals
 
     void journalism
     (
-        const dpp::cluster              &bot,
-        const dpp::interaction_create_t &event
+        dpp::cluster             &bot,
+        MYSQL*                   &database,
+        const dpp::form_submit_t &event
     );
 }
 

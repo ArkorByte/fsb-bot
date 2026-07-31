@@ -49,6 +49,7 @@ int main()
     Events::guild_member_remove(bot);
 
     Events::interaction_create(bot, database);
+    Events::form_submit(bot, database);
     Events::message_create(bot);
 
     bot.start(dpp::st_wait);

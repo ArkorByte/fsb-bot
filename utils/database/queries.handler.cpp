@@ -70,7 +70,7 @@ Database::QueryData Database::db_query
 
     while ((row = mysql_fetch_row(result)) != nullptr)
     {
-        std::map<std::string, std::string> row_data;
+        std::map<std::string, VariantType> row_data;
 
         for (int i = 0; i < fields_count; i++)
             row_data[column_names[i]] = row[i];
