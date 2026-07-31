@@ -3,10 +3,11 @@
 #include <dpp/dpp.h>
 
 /*
-    Display a modal.
+    Display a modal to make a post in journalism channel.
 
     Tasks:
-        1)
+        1) Declare modal.
+        2) Display modal.
 
     Parameters:
         - event / dpp::interaction_create_t / Event information.
