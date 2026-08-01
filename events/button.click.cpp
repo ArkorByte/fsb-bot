@@ -27,7 +27,7 @@ void Events::button_click
 {
     bot.on_button_click([&bot, &database](dpp::button_click_t event)
     {
-        if (event.custom_id == "journalism_censor")
-            Buttons::journalism_censor_button(bot, database, event);
+        if (event.custom_id == "journalism_censor" || event.custom_id == "journalism_blacklist")
+            Buttons::journalism_censor_button(bot, event.custom_id, database, event);
     });
 }

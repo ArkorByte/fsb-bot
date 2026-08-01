@@ -1,9 +1,9 @@
 #ifndef BUTTONS_HPP
 #define BUTTONS_HPP
 
-#include <dpp/dispatcher.h>
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
+#include <string>
 
 namespace Buttons
 {
@@ -14,6 +14,7 @@ namespace Buttons
     void journalism_censor_button
     (
         dpp::cluster        &bot,
+        const std::string   &custom_id,
         MYSQL*              &database,
         dpp::button_click_t &event
     );

@@ -2,6 +2,7 @@
 
 #include "../utils/utils.hpp"
 
+#include <algorithm>
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
 #include <string>
@@ -16,6 +17,7 @@
         4) Verify that the two nationalities match.
         5) If the user who posted is still in the same nation, we compare the ranks.
         6) Update stats, suppress embed to get rid of the post and set the message content to censored by government.
+        7) If the button pressed was journalism_blacklist, we set the user journalism status as blacklisted.
 
     Parameters:
         - bot      / dpp::cluster       / FSB client data.
@@ -28,6 +30,7 @@
 void Buttons::journalism_censor_button
 (
     dpp::cluster        &bot,
+    const std::string   &custom_id,
     MYSQL*              &database,
     dpp::button_click_t &event
 )
@@ -92,7 +95,8 @@ void Buttons::journalism_censor_button
         return;
     }
 
-    const int64_t media_freedom = std::get<int64_t>(nation[0]["media_freedom"]) - 3;
+    const int64_t score_hit = custom_id == "journalism_blacklist" ? 8 : 3;
+    const int64_t media_freedom = std::clamp(std::get<int64_t>(nation[0]["media_freedom"]) - score_hit, 0L, 100L);
     const int64_t censored_posts = std::get<int64_t>(nation[0]["censored_posts"]) + 1;
     const int64_t timestamp = Utils::Miscellaneous::get_current_timestamp();
 
@@ -105,20 +109,15 @@ void Buttons::journalism_censor_button
     message.set_content(":warning: Post taken down by the government of " + display_name + ".");
     bot.message_edit(message);
 
-    event.reply(dpp::message(":white_check_mark: This post was censored successfully! Your media freedom rating was hit by 3 points.").set_flags(dpp::m_ephemeral));
-}
+    if (custom_id == "journalism_blacklist")
+    {
+        Utils::Database::QueryData user_registered = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
 
+        if (user_registered.size() == 0)
+            Utils::Database::db_query(database, "INSERT INTO journalism (user_id, status) VALUES (" + std::to_string(user_id) + ", 1)");
+        else Utils::Database::db_query(database, "UPDATE journalism SET status = 1 WHERE user_id = " + std::to_string(user_id));
 
-
-/*
-    Blacklist the user who made a post in journalism (and remove the post).
-*/
-void Buttons::journalism_blacklist_button
-(
-    dpp::cluster        &bot,
-    MYSQL*              &database,
-    dpp::button_click_t &event
-)
-{
-
+        event.reply(dpp::message(":white_check_mark: This post has been censored and the user blacklisted! Your media freedom rating was hit by 8 points (5 + 3)."));
+    }
+    else event.reply(dpp::message(":white_check_mark: This post has been censored successfully! Your media freedom rating was hit by 3 points.").set_flags(dpp::m_ephemeral));
 }
