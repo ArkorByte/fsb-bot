@@ -30,6 +30,8 @@ void Commands::rules
             "### :speech_left: Discord server\n" +
             "- You must comply with **Discord Terms of Service** and **Community Guidelines** that you may find [here](https://discord.com/terms).\n" +
             "- **Impersonating** staff members is **STRICTLY PROHIBITED**.\n" +
+            "- Talk in the **right channels**, off-topic conversations may be **deleted**.\n" +
+            "- Due to **moderation concerns**, any message written in any language that is not **English**, **French** or **Russian** may be removed (*this list depends on staff proficiency in certain languages and may be updated*).\n"
             "- Using `@everyone` and `@here` are **reserved** to **staff ONLY**.\n" +
             "- Otherwise, anything that is not **EXPLICITLY marked** as prohibited is **IMPLICITLY allowed**.\n\n" +
             "### :pick: MineWorld\n" +

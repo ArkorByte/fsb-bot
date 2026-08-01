@@ -3,8 +3,10 @@ project(fsb)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories (
+    ${CMAKE_SOURCE_DIR}/buttons
     ${CMAKE_SOURCE_DIR}/commands
     ${CMAKE_SOURCE_DIR}/events
+    ${CMAKE_SOURCE_DIR}/modals
     ${CMAKE_SOURCE_DIR}/utils/database
     ${CMAKE_SOURCE_DIR}/utils/files
     ${CMAKE_SOURCE_DIR}/utils/logs
@@ -14,8 +16,10 @@ include_directories (
 )
 
 file(GLOB MAIN main.cpp)
+file(GLOB BUTTONS buttons/*.cpp)
 file(GLOB COMMANDS commands/*.cpp)
 file(GLOB EVENTS events/*.cpp)
+file(GLOB MODALS modals/*.cpp)
 file(GLOB UTILS_DATABASE utils/database/*.cpp)
 file(GLOB UTILS_FILES utils/files/*.cpp)
 file(GLOB UTILS_LOGS utils/logs/*.cpp)
@@ -25,8 +29,10 @@ file(GLOB UTILS_TEXT utils/text/*.cpp)
 
 set(ALL_SOURCES
     ${MAIN}
+    ${BUTTONS}
     ${COMMANDS}
     ${EVENTS}
+    ${MODALS}
     ${UTILS_DATABASE}
     ${UTILS_FILES}
     ${UTILS_LOGS}

@@ -4,11 +4,13 @@
 #include <map>
 #include <mysql/mysql.h>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace Database
 {
-    using QueryData = std::vector<std::map<std::string, std::string>>;
+    using VariantType = std::variant<std::nullptr_t, bool, int64_t, double, std::string>;
+    using QueryData = std::vector<std::map<std::string, VariantType>>;
 
     ///////////////////////////////////////////////////
     //////////////////// Functions ////////////////////
