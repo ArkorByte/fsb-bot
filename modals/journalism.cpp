@@ -43,7 +43,7 @@ void Modals::journalism
     const std::string bottom_image_url = std::get<std::string>(event.components[3].value);
 
     const int64_t user_id = event.command.usr.id;
-    Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nation_members WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
+    Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
 
     if (nationality.size() == 0)
     {
