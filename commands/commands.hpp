@@ -1,6 +1,8 @@
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
 
+#include "nation/nation.hpp"
+
 #include <dpp/dpp.h>
 
 namespace Commands
@@ -61,6 +63,12 @@ namespace Commands
     (
         const dpp::interaction_create_t &event
     );
+
+    //////////////////////
+    ///// nation.hpp /////
+    //////////////////////
+
+    namespace Nation = ::Nation;
 }
 
 #endif

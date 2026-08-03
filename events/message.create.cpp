@@ -23,6 +23,6 @@ void Events::message_create
     bot.on_message_create([&bot](const dpp::message_create_t &event)
     {
         if (event.msg.content == "<@1469410323776667679>")
-            event.reply(":wave: ФСБ is **online** and **functioning**!");
+            event.reply(":wave: ФСБ is online and functioning!");
     });
 }

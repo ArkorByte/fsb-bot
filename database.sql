@@ -52,6 +52,7 @@ CREATE TABLE relations (
     targeted_nation VARCHAR(30) NOT NULL,
     relation_score TINYINT DEFAULT 50,
     PRIMARY KEY (defining_nation, targeted_nation)
+);
 
 CREATE TABLE sanctions (
     resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -73,7 +74,7 @@ CREATE TABLE sanctions (
 );
 
 CREATE TABLE laws (
-    resolution_id VARCHAR(36) PRIMARY KEY NOT NULL,
+    resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     pending BOOLEAN DEFAULT TRUE,
     nation_id VARCHAR(30) NOT NULL,
     law_title VARCHAR(100) NOT NULL,

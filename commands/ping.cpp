@@ -29,7 +29,7 @@ void Commands::ping
 
     if (!shard)
     {
-        event.reply(dpp::message(":warning: Something **went wrong** while getting shard.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: Something went wrong while getting shard.").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -37,9 +37,9 @@ void Commands::ping
 
     if (latency <= 0)
     {
-        event.reply(dpp::message(":warning: Gateway API is still **warming up**.. Try again later.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: Gateway API is still warming up..").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    event.reply(dpp::message(":ping_pong: ФСБ **latency**: " + std::to_string((int) latency) + "ms.").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(":ping_pong: ФСБ latency: " + std::to_string((int) latency) + "ms.").set_flags(dpp::m_ephemeral));
 }

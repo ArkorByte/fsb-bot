@@ -36,21 +36,21 @@ void Commands::kick
     const dpp::interaction_create_t &event
 )
 {
-    const dpp::snowflake user_id = std::get<dpp::snowflake>(event.get_parameter("member"));
+    const int64_t user_id = std::get<int64_t>(event.get_parameter("member"));
     const std::string reason = std::get<std::string>(event.get_parameter("reason"));
     const bool silent = std::get<bool>(event.get_parameter("silent"));
 
-    const dpp::snowflake executer_id = event.command.usr.id;
+    const int64_t executer_id = event.command.usr.id;
 
     if (user_id == executer_id)
     {
-        event.reply(dpp::message(":warning: You are not allowed to **kick yourself**!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: You are not allowed to kick yourself!").set_flags(dpp::m_ephemeral));
         return;
     }
 
     if (user_id == bot.me.id)
     {
-        event.reply(dpp::message("<:putin_gun:1516736231357153491> ФСБ **WON'T** go down without a fight, сука!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message("<:putin_gun:1516736231357153491> ФСБ WILL NOT go down without a fight, сука!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -58,22 +58,22 @@ void Commands::kick
 
     if (member_it == event.command.resolved.members.end())
     {
-        event.reply(dpp::message(":warning: This member was **not found** on this server!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: This member was not found on this server!").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    const dpp::snowflake guild_id = event.command.guild_id;
+    const int64_t guild_id = event.command.guild_id;
     const dpp::guild *guild = dpp::find_guild(guild_id);
 
     if (!guild)
     {
-        event.reply(dpp::message(":warning: Something **went wrong** while retrieving server data!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: Something went wrong while retrieving server data!").set_flags(dpp::m_ephemeral));
         return;
     }
 
     if (user_id == guild -> owner_id)
     {
-        event.reply(dpp::message(":warning: You can not kick the **server owner**!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: You can not kick the server owner!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -82,7 +82,7 @@ void Commands::kick
 
     if (!(executer_permissions & dpp::p_kick_members))
     {
-        event.reply(dpp::message(":warning: You do not have the **required permissions** to execute this command!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: You do not have the required permissions to execute this command!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -91,7 +91,7 @@ void Commands::kick
 
     if ((member_permissions & dpp::p_administrator) && executer_id != guild -> owner_id)
     {
-        event.reply(dpp::message(":warning: Only the **server owner** is allowed to kick administrators!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: Only the server owner is allowed to kick administrators!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -100,7 +100,7 @@ void Commands::kick
 
     if (highest_member_role >= highest_executer_role && executer_id != guild -> owner_id)
     {
-        event.reply(dpp::message(":warning: You **can not** kick this member.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: You can not kick this member.").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -108,7 +108,7 @@ void Commands::kick
 
     if (!(bot_permissions & dpp::p_kick_members))
     {
-        event.reply(dpp::message(":warning: ФСБ does not have the **required permissions** to kick!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: ФСБ does not have the required permissions to kick!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -116,7 +116,7 @@ void Commands::kick
 
     if (bot_member_it == guild -> members.end())
     {
-        event.reply(dpp::message(":warning: Failed to **find ФСБ** in the guild members list!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: Failed to find ФСБ in the guild members list!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -125,7 +125,7 @@ void Commands::kick
 
     if (highest_member_role >= highest_bot_role)
     {
-        event.reply(dpp::message(":warning: ФСБ **can not** kick this member!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: ФСБ can not kick this member!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -135,11 +135,11 @@ void Commands::kick
     {
         if (callback.is_error())
         {
-            event.reply(dpp::message(":warning: Something **went wrong** while kicking the member!").set_flags(dpp::m_ephemeral));
+            event.reply(dpp::message(":warning: Something went wrong while kicking the member!").set_flags(dpp::m_ephemeral));
             return;
         }
 
-        event.reply(dpp::message(":white_check_mark: <@" + std::to_string(user_id) + "> has been **successfully** kicked!").set_flags(silent ? dpp::m_ephemeral : 0));
+        event.reply(dpp::message(":white_check_mark: <@" + std::to_string(user_id) + "> has been successfully kicked!").set_flags(silent ? dpp::m_ephemeral : 0));
         Utils::Logs::log("[ban] " + std::to_string(executer_id) + " kicked " + std::to_string(user_id) + " from " + std::to_string(guild_id) +  " for \"" + reason + "\"!");
     });
 }

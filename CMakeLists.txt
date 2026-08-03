@@ -6,6 +6,7 @@ include_directories (
     ${CMAKE_SOURCE_DIR}/autocomplete
     ${CMAKE_SOURCE_DIR}/buttons
     ${CMAKE_SOURCE_DIR}/commands
+    ${CMAKE_SOURCE_DIR}/commands/nation
     ${CMAKE_SOURCE_DIR}/events
     ${CMAKE_SOURCE_DIR}/modals
     ${CMAKE_SOURCE_DIR}/utils/database
@@ -20,6 +21,7 @@ file(GLOB MAIN main.cpp)
 file(GLOB AUTOCOMPLETE autocomplete/*.cpp)
 file(GLOB BUTTONS buttons/*.cpp)
 file(GLOB COMMANDS commands/*.cpp)
+file(GLOB COMMANDS_NATION commands/nation/*.cpp)
 file(GLOB EVENTS events/*.cpp)
 file(GLOB MODALS modals/*.cpp)
 file(GLOB UTILS_DATABASE utils/database/*.cpp)
@@ -34,6 +36,7 @@ set(ALL_SOURCES
     ${AUTOCOMPLETE}
     ${BUTTONS}
     ${COMMANDS}
+    ${COMMANDS_NATION}
     ${EVENTS}
     ${MODALS}
     ${UTILS_DATABASE}

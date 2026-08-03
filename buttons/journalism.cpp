@@ -36,7 +36,7 @@ void Buttons::journalism_censor_button
 )
 {
     const int64_t executer_id = event.command.usr.id;
-    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = " + std::to_string(executer_id) + " LIMIT 1");
+    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(executer_id) + "' LIMIT 1");
 
     if (executer_nationality.size() == 0)
     {
@@ -44,7 +44,7 @@ void Buttons::journalism_censor_button
         return;
     }
 
-    const int64_t executer_rank = std::get<int64_t>(executer_nationality[0]["rank"]);
+    const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
 
     if (executer_rank == 0)
     {
@@ -64,7 +64,7 @@ void Buttons::journalism_censor_button
 
     const int64_t user_id = std::stoll(message_content.substr(0, dot_position));
     const std::string message_nation_id = message_content.substr(dot_position + 1);
-    const std::string executer_nation_id = std::get<std::string>(executer_nationality[0]["nation_id"]);
+    const std::string executer_nation_id = executer_nationality[0]["nation_id"];
 
     if (executer_nation_id != message_nation_id)
     {
@@ -72,12 +72,12 @@ void Buttons::journalism_censor_button
         return;
     }
 
-    Utils::Database::QueryData user_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
+    Utils::Database::QueryData user_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (user_nationality.size() != 0)
     {
-        const std::string user_nation_id = std::get<std::string>(user_nationality[0]["nation_id"]);
-        const int64_t user_rank = std::get<int64_t>(user_nationality[0]["rank"]);
+        const std::string user_nation_id = user_nationality[0]["nation_id"];
+        const int user_rank = std::stoi(user_nationality[0]["rank"]);
 
         if (user_nation_id == executer_nation_id && user_rank >= executer_rank)
         {
@@ -86,7 +86,7 @@ void Buttons::journalism_censor_button
         }
     }
 
-    Utils::Database::QueryData nation = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = " + executer_nation_id + " LIMIT 1");
+    Utils::Database::QueryData nation = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + executer_nation_id + "' LIMIT 1");
 
     if (nation.size() == 0)
     {
@@ -95,15 +95,15 @@ void Buttons::journalism_censor_button
         return;
     }
 
-    const int64_t score_hit = custom_id == "journalism_blacklist" ? 8 : 3;
-    const int64_t media_freedom = std::clamp(std::get<int64_t>(nation[0]["media_freedom"]) - score_hit, 0L, 100L);
-    const int64_t censored_posts = std::get<int64_t>(nation[0]["censored_posts"]) + 1;
-    const int64_t timestamp = Utils::Miscellaneous::get_current_timestamp();
+    const int score_hit = custom_id == "journalism_blacklist" ? 8 : 3;
+    const int media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) - score_hit, 0LL, 100LL);
+    const int censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
+    const std::string timestamp = std::to_string(Utils::Miscellaneous::get_current_timestamp());
 
-    Utils::Database::db_query(database, "UPDATE nations SET media_freedom = " + std::to_string(media_freedom) + ", censored_posts = " + std::to_string(censored_posts) + ", last_manual_censorship = " + std::to_string(timestamp) + " WHERE nation_id = " + executer_nation_id);
+    Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_manual_censorship = '" + timestamp + "' WHERE nation_id = '" + executer_nation_id + "'");
 
     dpp::message message = event.command.msg;
-    const std::string display_name = std::get<std::string>(nation[0]["display_name"]);
+    const std::string display_name = nation[0]["display_name"];
 
     message.suppress_embeds();
     message.set_content(":warning: Post taken down by the government of " + display_name + ".");
@@ -111,11 +111,11 @@ void Buttons::journalism_censor_button
 
     if (custom_id == "journalism_blacklist")
     {
-        Utils::Database::QueryData user_registered = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
+        Utils::Database::QueryData user_registered = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
         if (user_registered.size() == 0)
-            Utils::Database::db_query(database, "INSERT INTO journalism (user_id, status) VALUES (" + std::to_string(user_id) + ", 1)");
-        else Utils::Database::db_query(database, "UPDATE journalism SET status = 1 WHERE user_id = " + std::to_string(user_id));
+            Utils::Database::db_query(database, "INSERT INTO journalism (user_id, status) VALUES ('" + std::to_string(user_id) + "', 1)");
+        else Utils::Database::db_query(database, "UPDATE journalism SET status = 1 WHERE user_id = '" + std::to_string(user_id) + "'");
 
         event.reply(dpp::message(":white_check_mark: This post has been censored and the user blacklisted! Your media freedom rating was hit by 8 points (5 + 3)."));
     }

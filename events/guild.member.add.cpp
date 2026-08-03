@@ -35,7 +35,7 @@ void Events::guild_member_add
         const int64_t user_id = event.added.user_id;
 
         Utils::Logs::log("New member on guild " + std::to_string(guild_id) + " -> " + std::to_string(user_id) + ".");
-        Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = " + std::to_string(guild_id) + " LIMIT 1");
+        Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = '" + std::to_string(guild_id) + "' LIMIT 1");
 
         if (config.size() < 1)
         {
@@ -43,9 +43,9 @@ void Events::guild_member_add
             return;
         }
 
-        const int64_t member_role = std::get<int64_t>(config[0]["member_role"]);
-        const int64_t stateless_role = std::get<int64_t>(config[0]["stateless_role"]);
-        const int64_t welcome_channel = std::get<int64_t>(config[0]["welcome_channel"]);
+        const int64_t member_role = std::stoll(config[0]["member_role"]);
+        const int64_t stateless_role = std::stoll(config[0]["stateless_role"]);
+        const int64_t welcome_channel = std::stoll(config[0]["welcome_channel"]);
 
         if (dpp::find_role(member_role) -> guild_id == guild_id)
             bot.guild_member_add_role(guild_id, user_id, member_role);

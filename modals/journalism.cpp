@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <dpp/dpp.h>
-#include <dpp/message.h>
 #include <mysql/mysql.h>
 #include <string>
 
@@ -43,16 +42,16 @@ void Modals::journalism
     const std::string bottom_image_url = std::get<std::string>(event.components[3].value);
 
     const int64_t user_id = event.command.usr.id;
-    Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
+    Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
-        event.reply(dpp::message(":warning: You can not post anything as **stateless**. Join a nation first.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":warning: You can not post anything as stateless. Join a nation first.").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    const std::string nation_id = std::get<std::string>(nationality[0]["nation_id"]);
-    Utils::Database::QueryData nation = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = " + nation_id + " LIMIT 1");
+    const std::string nation_id = nationality[0]["nation_id"];
+    Utils::Database::QueryData nation = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nation.size() == 0)
     {
@@ -61,43 +60,44 @@ void Modals::journalism
         return;
     }
 
-    const bool whitelist = std::get<bool>(nation[0]["media_whitelist"]);
-    const int64_t media_posts = std::get<int64_t>(nation[0]["media_posts"]) + 1;
+    const std::string whitelist = nation[0]["media_whitelist"];
+    const int64_t media_posts = std::stoll(nation[0]["media_posts"]) + 1;
     const int64_t timestamp = Utils::Miscellaneous::get_current_timestamp();
 
-    Utils::Database::QueryData journalism_status = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = " + std::to_string(user_id) + " LIMIT 1");
-    int64_t user_status = -1;
+    Utils::Database::QueryData journalism_status = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
+    int user_status = -1;
 
     if (journalism_status.size() != 0)
-        user_status = std::get<int64_t>(journalism_status[0]["status"]);
+        user_status = std::stoi(journalism_status[0]["status"]);
 
-    if (whitelist == true && user_status != 0)
+    if (whitelist == "1" && user_status != 0)
     {
         event.reply(dpp::message(":warning: Your post has been **automatically censored** by your government due to the **highest censorship** measures in place!").set_flags(dpp::m_ephemeral));
-        const int64_t censored_posts = std::get<int64_t>(nation[0]["censored_posts"]) + 1;
-        Utils::Database::db_query(database, "UPDATE nations SET media_posts = " + std::to_string(media_posts) + ", censored_posts = " + std::to_string(censored_posts) + ", last_a_censorship = " + std::to_string(timestamp) + " WHERE nation_id = " + nation_id);
+        const int64_t censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
+
+        Utils::Database::db_query(database, "UPDATE nations SET media_posts = '" + std::to_string(media_posts) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_a_censorship = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
         return;
     }
 
-    const bool blacklist = std::get<bool>(nation[0]["media_blacklist"]);
+    const std::string blacklist = nation[0]["media_blacklist"];
 
-    if (blacklist == true && user_status == 1)
+    if (blacklist == "1" && user_status == 1)
     {
         event.reply(dpp::message(":warning: Your post has been **automatically censored** by your government due to **censorship restrictions** against you!").set_flags(dpp::m_ephemeral));
 
-        const int64_t media_freedom = std::clamp(std::get<int64_t>(nation[0]["media_freedom"]) - 1, 0L, 100L);
-        const int64_t censored_posts = std::get<int64_t>(nation[0]["censored_posts"]) + 1;
+        const int64_t media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) - 1, 0LL, 100LL);
+        const int64_t censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
 
-        Utils::Database::db_query(database, "UPDATE nations SET media_freedom = " + std::to_string(media_freedom) + ", media_posts = " + std::to_string(media_posts) + ", censored_posts = " + std::to_string(censored_posts) + ", last_a_censorship = " + std::to_string(timestamp) + " WHERE nation_id = " + nation_id);
+        Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + std::to_string(media_posts) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_a_censorship = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
         return;
     }
 
-    const int change = whitelist == true ? 0 : 1;
-    const int64_t media_freedom = std::clamp(std::get<int64_t>(nation[0]["media_freedom"]) + change, 0L, 100L);
-    const std::string nation_name = std::get<std::string>(nation[0]["display_name"]);
+    const int change = whitelist == "1" ? 0 : 1;
+    const int64_t media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) + change, 0LL, 100LL);
+    const std::string nation_name = nation[0]["display_name"];
     const std::string flag = nation_flags[nation_id];
 
-    Utils::Database::db_query(database, "UPDATE nations SET media_freedom = " + std::to_string(media_freedom) + ", media_posts = " + std::to_string(media_posts) + ", last_post = " + std::to_string(timestamp) + " WHERE nation_id = " + nation_id);
+    Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + std::to_string(media_posts) + "', last_post = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
 
     const dpp::embed embed = dpp::embed()
     .set_color(dpp::colors::cream_white)
@@ -127,8 +127,8 @@ void Modals::journalism
 
     const int64_t guild_id = event.command.guild_id;
 
-    Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = " + std::to_string(guild_id) + " LIMIT 1");
-    const int64_t journalism_channel = std::get<int64_t>(config[0]["journalism_channel"]);
+    Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = '" + std::to_string(guild_id) + "' LIMIT 1");
+    const int64_t journalism_channel = std::stoll(config[0]["journalism_channel"]);
 
     if (dpp::find_channel(journalism_channel) -> guild_id == guild_id)
     {

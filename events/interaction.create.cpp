@@ -25,7 +25,7 @@ void Events::interaction_create
     MYSQL*       &database
 )
 {
-    bot.on_interaction_create([&bot](const dpp::interaction_create_t event)
+    bot.on_interaction_create([&bot, &database](const dpp::interaction_create_t event)
     {
         if (event.command.get_command_name() == "ban")
             Commands::ban(bot, event);
@@ -33,6 +33,13 @@ void Events::interaction_create
             Commands::journalism(event);
         else if (event.command.get_command_name() == "kick")
             Commands::kick(bot, event);
+        else if (event.command.get_command_name() == "nation")
+        {
+            const std::string subcommand = event.command.get_command_interaction().options[0].name;
+
+            if (subcommand == "claim")
+                Commands::Nation::claim_nation(bot, database, event);
+        }
         else if (event.command.get_command_name() == "ping")
             Commands::ping(bot, event);
         else if (event.command.get_command_name() == "play")
