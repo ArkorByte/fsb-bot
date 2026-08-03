@@ -23,7 +23,7 @@ void Nation::claim_nation
 
     if (nations.size() == 0)
     {
-        event.reply(":warning: This nation does not exist!");
+        event.reply(dpp::message(":warning: This nation does not exist!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -31,7 +31,7 @@ void Nation::claim_nation
 
     if (leadership.size() != 0)
     {
-        event.reply(":warning: You can not claim a nation that already has a head of state!");
+        event.reply(dpp::message(":warning: You can not claim a nation that already has a head of state!").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -47,7 +47,7 @@ void Nation::claim_nation
 
         if (!nation_id.empty())
         {
-            event.reply(":warning: You are already a member of a nation! To proceed, leave your current state.");
+            event.reply(dpp::message(":warning: You are already a member of a nation! To proceed, leave your current state.").set_flags(dpp::m_ephemeral));
             return;
         }
         else Utils::Database::db_query(database, "UPDATE nationality SET nation_id = '" + nation_id + "', rank = 3, last_rank_update = '" + now + "', joining_time = '" + now + "' WHERE user_id = '" + user_id + "'");
@@ -57,5 +57,5 @@ void Nation::claim_nation
     const std::string display_name = nations[0]["display_name"];
 
     Utils::Database::db_query(database, "UPDATE nations SET claim_time = '" + now + "', leadership_changes = '" + std::to_string(leadership_changes) + "', last_leadership_change = '" + now + "' WHERE nation_id = '" + nation_id + "'");
-    event.reply(":white_check_mark: You are now the head of state of " + display_name + "!");
+    event.reply(dpp::message(":white_check_mark: You are now the head of state of " + display_name + "!").set_flags(dpp::m_ephemeral));
 }
