@@ -10,6 +10,7 @@ CREATE TABLE nations (
     nation_id VARCHAR(50) PRIMARY KEY NOT NULL,
     display_name VARCHAR(50) NOT NULL,
     description VARCHAR(500) DEFAULT "No description." NOT NULL,
+    role_id BIGINT DEFAULT 0
     join_condition TINYINT DEFAULT 1,
     invite_permission TINYINT DEFAULT 0,
     claim_time BIGINT DEFAULT 0,

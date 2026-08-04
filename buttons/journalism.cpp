@@ -20,9 +20,10 @@
         7) If the button pressed was journalism_blacklist, we set the user journalism status as blacklisted.
 
     Parameters:
-        - bot      / dpp::cluster       / FSB client data.
-        - database / MYSQL*             / FSB + MineWorld database.
-        - event    / dpp::form_submit_t / Event information.
+        - bot       / dpp::cluster       / FSB client data.
+        - custom_id / string             / Custom ID of the button.
+        - database  / MYSQL*             / FSB + MineWorld database.
+        - event     / dpp::form_submit_t / Event information.
 
     Returns:
         No object returned.

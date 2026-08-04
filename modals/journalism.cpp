@@ -1,6 +1,5 @@
 #include "modals.hpp"
 
-#include "../config/nations.hpp"
 #include "../utils/utils.hpp"
 
 #include <algorithm>
@@ -95,7 +94,7 @@ void Modals::journalism
     const int change = whitelist == "1" ? 0 : 1;
     const int64_t media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) + change, 0LL, 100LL);
     const std::string nation_name = nation[0]["display_name"];
-    const std::string flag = nation_flags[nation_id];
+    const std::string flag = Utils::Text::get_nation_flag(nation_id);
 
     Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + std::to_string(media_posts) + "', last_post = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
 

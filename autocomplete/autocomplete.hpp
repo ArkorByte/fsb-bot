@@ -16,6 +16,17 @@ namespace Autocomplete
         MYSQL*                    &database,
         const dpp::autocomplete_t &event
     );
+
+    ///////////////////////
+    ///// nations.cpp /////
+    ///////////////////////
+
+    void nations
+    (
+        dpp::cluster              &bot,
+        MYSQL*                    &database,
+        const dpp::autocomplete_t &event
+    );
 }
 
 #endif

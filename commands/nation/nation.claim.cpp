@@ -7,7 +7,21 @@
 #include <string>
 
 /*
+    Claim a nation that does not have any head of state.
 
+    Tasks:
+        1) Verify nation ID.
+        2) Try to get a head of state for the targeted nation.
+        3) Verify that user is stateless.
+        4) Set the user as head of state and update stats.
+
+    Parameters:
+        - bot       / dpp::cluster       / FSB client data.
+        - database  / MYSQL*             / FSB + MineWorld database.
+        - event     / dpp::form_submit_t / Event information.
+
+    Returns:
+        No object returned.
 */
 void Nation::claim_nation
 (

@@ -32,8 +32,10 @@ void Events::autocomplete
         {
             const std::string subcommand = event.options[0].name;
 
-            if (subcommand == "claim" || subcommand == "join")
+            if (subcommand == "claim")
                 Autocomplete::empty_nations(bot, database, event);
+            else if (subcommand == "info" || subcommand == "join" || subcommand == "relationship")
+                Autocomplete::nations(bot, database, event);
         }
     });
 }
