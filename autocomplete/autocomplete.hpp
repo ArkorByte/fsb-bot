@@ -27,6 +27,16 @@ namespace Autocomplete
         MYSQL*                    &database,
         const dpp::autocomplete_t &event
     );
+
+    /////////////////////
+    ///// ranks.cpp /////
+    /////////////////////
+
+    void ranks
+    (
+        dpp::cluster              &bot,
+        const dpp::autocomplete_t &event
+    );
 }
 
 #endif

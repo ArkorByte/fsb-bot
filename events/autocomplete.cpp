@@ -36,6 +36,8 @@ void Events::autocomplete
                 Autocomplete::empty_nations(bot, database, event);
             else if (subcommand == "info" || subcommand == "join" || subcommand == "relationship")
                 Autocomplete::nations(bot, database, event);
+            else if (subcommand == "rank")
+                Autocomplete::ranks(bot, event);
         }
     });
 }

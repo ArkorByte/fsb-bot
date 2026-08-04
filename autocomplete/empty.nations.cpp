@@ -37,6 +37,9 @@ void Autocomplete::empty_nations
     {
         if (option.focused)
         {
+            if (option.name != "nation_id")
+                return;
+
             focused_value = std::get<std::string>(option.value);
             break;
         }

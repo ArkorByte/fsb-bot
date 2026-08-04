@@ -2,7 +2,6 @@
 
 #include "../utils/utils.hpp"
 
-#include <dpp/appcommand.h>
 #include <dpp/dpp.h>
 #include <string>
 #include <vector>
@@ -162,10 +161,6 @@ void Events::ready
                 // Subcommand /nation leave.
                 dpp::command_option nation_leave(dpp::co_sub_command, "leave", "Leave your nation.");
                 nation_leave.add_option(nation_leave);
-
-                // Subcommand /nation list.
-                dpp::command_option nation_list(dpp::co_sub_command, "list", "Display all nations of the server.");
-                nation_command.add_option(nation_list);
 
                 // Subcommand /nation rank.
                 dpp::command_option nation_rank(dpp::co_sub_command, "rank", "Change the rank of a player within your nation.");
