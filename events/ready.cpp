@@ -2,6 +2,7 @@
 
 #include "../utils/utils.hpp"
 
+#include <dpp/appcommand.h>
 #include <dpp/dpp.h>
 #include <string>
 #include <vector>
@@ -234,6 +235,11 @@ void Events::ready
                 sanctions_command.add_option(sanctions_list);
 
             slash_commands.push_back(sanctions_command);
+
+            // Command /ticket.
+            dpp::slashcommand ticket_command("ticket", "Contact directly the administration.", bot.me.id);
+            ticket_command.add_option(dpp::command_option(dpp::co_string, "reason", "Why do you want to contact the administration.", true));
+            slash_commands.push_back(ticket_command);
 
             // Command /unban.
             dpp::slashcommand unban_command("unban", "Revoke a permanent deportation order.", bot.me.id);
