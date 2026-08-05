@@ -23,10 +23,10 @@ void Commands::play
     (
         dpp::message
         (
-            std::string("### __How to play to Mineworld__\n") +
-            "- Get a **Minecraft Java launcher** (*26.1.2 or higher*).\n" +
-            "- Join the server at the **address** `51.75.140.147`.\n" +
-            "- **Web interactive map** of the world at `http://51.75.140.147:8100`."
+            std::string("### How to play to Mineworld\n") +
+            "- Get a Minecraft Java launcher (26.1.2 or higher).\n" +
+            "- Join the server at the address `51.75.140.147`.\n" +
+            "- Web interactive map of the world at `http://51.75.140.147:8100`."
         ).set_flags(dpp::m_ephemeral)
     );
 }
