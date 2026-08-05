@@ -40,7 +40,7 @@ void Modals::journalism
     const std::string top_image_url = std::get<std::string>(event.components[2].value);
     const std::string bottom_image_url = std::get<std::string>(event.components[3].value);
 
-    const int64_t user_id = event.command.usr.id;
+    const dpp::snowflake user_id = event.command.usr.id;
     Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
@@ -124,7 +124,7 @@ void Modals::journalism
         .set_id("journalism_blacklist")
     );
 
-    const int64_t guild_id = event.command.guild_id;
+    const dpp::snowflake guild_id = event.command.guild_id;
 
     Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = '" + std::to_string(guild_id) + "' LIMIT 1");
     const int64_t journalism_channel = std::stoll(config[0]["journalism_channel"]);

@@ -36,7 +36,7 @@ void Buttons::journalism_censor_button
     dpp::button_click_t &event
 )
 {
-    const int64_t executer_id = event.command.usr.id;
+    const dpp::snowflake executer_id = event.command.usr.id;
     Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(executer_id) + "' LIMIT 1");
 
     if (executer_nationality.size() == 0)
@@ -63,7 +63,7 @@ void Buttons::journalism_censor_button
         return;
     }
 
-    const int64_t user_id = std::stoll(message_content.substr(0, dot_position));
+    const dpp::snowflake user_id = std::stoll(message_content.substr(0, dot_position));
     const std::string message_nation_id = message_content.substr(dot_position + 1);
     const std::string executer_nation_id = executer_nationality[0]["nation_id"];
 

@@ -33,8 +33,8 @@ void Nation::nation_invite
     const dpp::interaction_create_t &event
 )
 {
-    const int64_t user_id = std::get<int64_t>(event.get_parameter("member"));
-    const int64_t executer_id = event.command.usr.id;
+    const std::string user_id = std::to_string(std::get<dpp::snowflake>(event.get_parameter("member")));
+    const std::string executer_id = std::to_string(event.command.usr.id);
 
     if (user_id == executer_id)
     {
@@ -42,7 +42,7 @@ void Nation::nation_invite
         return;
     }
 
-    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(executer_id) + "' LIMIT 1");
+    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + executer_id + "' LIMIT 1");
 
     if (executer_nationality.size() == 0)
     {
@@ -90,7 +90,7 @@ void Nation::nation_invite
         return;
     }
 
-    Utils::Database::QueryData is_already_invited = Utils::Database::db_query(database, "SELECT * FROM invitations WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
+    Utils::Database::QueryData is_already_invited = Utils::Database::db_query(database, "SELECT * FROM invitations WHERE user_id = '" + user_id + "' LIMIT 1");
 
     if (is_already_invited.size() != 0)
     {
@@ -98,6 +98,6 @@ void Nation::nation_invite
         return;
     }
 
-    Utils::Database::db_query(database, "INSERT INTO invitations (user_id, nation_id, invited_by, creation_time) VALUES ('" + std::to_string(user_id) + "', '" + nation_id + "', '" + std::to_string(executer_id) + "', '" + std::to_string(Utils::Miscellaneous::get_current_timestamp()) + "')");
-    event.reply(dpp::message(":white_check_mark: An invitation is now pending for this user. They have 24 hours to run the `/nation join` command before the invitation expires.").set_flags(dpp::m_ephemeral));
+    Utils::Database::db_query(database, "INSERT INTO invitations (user_id, nation_id, invited_by, creation_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + executer_id + "', '" + std::to_string(Utils::Miscellaneous::get_current_timestamp()) + "')");
+    event.reply(dpp::message(":white_check_mark: An invitation is now pending for this user. They have 24 hours to run `/nation join` before the invitation expires.").set_flags(dpp::m_ephemeral));
 }

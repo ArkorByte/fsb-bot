@@ -36,11 +36,11 @@ void Commands::ban
     const dpp::interaction_create_t &event
 )
 {
-    const int64_t user_id = std::get<int64_t>(event.get_parameter("member"));
+    const dpp::snowflake user_id = std::get<dpp::snowflake>(event.get_parameter("member"));
     const std::string reason = std::get<std::string>(event.get_parameter("reason"));
     const bool silent = std::get<bool>(event.get_parameter("silent"));
 
-    const int64_t executer_id = event.command.usr.id;
+    const dpp::snowflake executer_id = event.command.usr.id;
 
     if (user_id == executer_id)
     {
@@ -62,7 +62,7 @@ void Commands::ban
         return;
     }
 
-    const int64_t guild_id = event.command.guild_id;
+    const dpp::snowflake guild_id = event.command.guild_id;
     const dpp::guild *guild = dpp::find_guild(guild_id);
 
     if (!guild)
