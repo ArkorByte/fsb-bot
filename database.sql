@@ -1,3 +1,6 @@
+CREATE DATABASE fsb;
+USE fsb;
+
 CREATE TABLE config (
     guild_id BIGINT PRIMARY KEY NOT NULL,
     member_role BIGINT DEFAULT 0,
@@ -42,15 +45,15 @@ CREATE TABLE nations (
 
 CREATE TABLE nationality (
     user_id BIGINT PRIMARY KEY NOT NULL,
-    nation_id VARCHAR(30) DEFAULT 0,
+    nation_id VARCHAR(50) DEFAULT 0,
     rank TINYINT DEFAULT 0,
     last_rank_update BIGINT DEFAULT 0,
     joining_time BIGINT DEFAULT 0
 );
 
 CREATE TABLE relations (
-    defining_nation VARCHAR(30) NOT NULL,
-    targeted_nation VARCHAR(30) NOT NULL,
+    defining_nation VARCHAR(50) NOT NULL,
+    targeted_nation VARCHAR(50) NOT NULL,
     relation_score TINYINT DEFAULT 50,
     PRIMARY KEY (defining_nation, targeted_nation)
 );
@@ -58,8 +61,8 @@ CREATE TABLE relations (
 CREATE TABLE sanctions (
     resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     pending BOOLEAN DEFAULT TRUE,
-    nation_id VARCHAR(30) NOT NULL,
-    sanctioned_nation VARCHAR(30) NOT NULL,
+    nation_id VARCHAR(50) NOT NULL,
+    sanctioned_nation VARCHAR(50) NOT NULL,
     sanction_type TINYINT,
     sanction_title VARCHAR(100) NOT NULL,
     sanction_details VARCHAR(500) NOT NULL,
@@ -77,7 +80,7 @@ CREATE TABLE sanctions (
 CREATE TABLE laws (
     resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     pending BOOLEAN DEFAULT TRUE,
-    nation_id VARCHAR(30) NOT NULL,
+    nation_id VARCHAR(50) NOT NULL,
     law_title VARCHAR(100) NOT NULL,
     law_details VARCHAR(500) NOT NULL,
     law_adoption_time BIGINT DEFAULT 0,
@@ -89,9 +92,9 @@ CREATE TABLE laws (
 );
 
 CREATE TABLE un_membership (
-    nation_id VARCHAR(30) PRIMARY KEY NOT NULL,
+    nation_id VARCHAR(50) PRIMARY KEY NOT NULL,
     pending BOOLEAN DEFAULT TRUE,
-    invited_by VARCHAR(30) NOT NULL,
+    invited_by VARCHAR(50) NOT NULL,
     joining_time BIGINT DEFAULT 0,
     vote_start BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL,
     vote_duration VARCHAR(3) NOT NULL,
@@ -103,6 +106,14 @@ CREATE TABLE un_membership (
 CREATE TABLE journalism (
     user_id BIGINT PRIMARY KEY NOT NULL,
     status TINYINT
+);
+
+CREATE TABLE invitations (
+    user_id BIGINT NOT NULL,
+    nation_id VARCHAR(50) NOT NULL,
+    invited_by VARCHAR(50) NOT NULL,
+    creation_time BIGINT NOT NULL,
+    PRIMARY KEY (user_id, nation_id)
 );
 
 
