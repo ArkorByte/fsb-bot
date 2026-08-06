@@ -33,7 +33,7 @@ void Nation::nation_invite
     const dpp::interaction_create_t &event
 )
 {
-    const std::string user_id = std::to_string(std::get<dpp::snowflake>(event.get_parameter("member")));
+    const std::string user_id = std::to_string(std::get<dpp::snowflake>(event.get_parameter("player")));
     const std::string executer_id = std::to_string(event.command.usr.id);
 
     if (user_id == executer_id)

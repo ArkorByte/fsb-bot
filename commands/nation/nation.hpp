@@ -38,6 +38,17 @@ namespace Nation
         MYSQL*                          &database,
         const dpp::interaction_create_t &event
     );
+
+    ///////////////////////////
+    ///// nation.join.cpp /////
+    ///////////////////////////
+
+    void join_nation
+    (
+        dpp::cluster                    &bot,
+        MYSQL*                          &database,
+        const dpp::interaction_create_t &event
+    );
 }
 
 #endif

@@ -146,7 +146,7 @@ void Events::ready
 
                 // Subcommand /nation invite.
                 dpp::command_option nation_invite(dpp::co_sub_command, "invite", "Invite a player into your nation.");
-                nation_invite.add_option(dpp::command_option(dpp::co_user, "member", "Player to invite.", true));
+                nation_invite.add_option(dpp::command_option(dpp::co_user, "player", "Player to invite.", true));
                 nation_command.add_option(nation_invite);
 
                 // Subcommand /nation join.
