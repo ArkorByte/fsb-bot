@@ -7,6 +7,16 @@
 namespace Events
 {
     ////////////////////////////
+    ///// autocomplete.cpp /////
+    ////////////////////////////
+
+    void autocomplete
+    (
+        dpp::cluster &bot,
+        MYSQL*       &database
+    );
+
+    ////////////////////////////
     ///// button.click.cpp /////
     ////////////////////////////
 

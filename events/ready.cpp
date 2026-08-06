@@ -163,10 +163,6 @@ void Events::ready
                 dpp::command_option nation_leave(dpp::co_sub_command, "leave", "Leave your nation.");
                 nation_leave.add_option(nation_leave);
 
-                // Subcommand /nation list.
-                dpp::command_option nation_list(dpp::co_sub_command, "list", "Display all nations of the server.");
-                nation_command.add_option(nation_list);
-
                 // Subcommand /nation rank.
                 dpp::command_option nation_rank(dpp::co_sub_command, "rank", "Change the rank of a player within your nation.");
                 nation_rank.add_option(dpp::command_option(dpp::co_user, "member", "Member to edit.", true));
@@ -239,6 +235,11 @@ void Events::ready
                 sanctions_command.add_option(sanctions_list);
 
             slash_commands.push_back(sanctions_command);
+
+            // Command /ticket.
+            dpp::slashcommand ticket_command("ticket", "Contact directly the administration.", bot.me.id);
+            ticket_command.add_option(dpp::command_option(dpp::co_string, "reason", "Why do you want to contact the administration.", true));
+            slash_commands.push_back(ticket_command);
 
             // Command /unban.
             dpp::slashcommand unban_command("unban", "Revoke a permanent deportation order.", bot.me.id);

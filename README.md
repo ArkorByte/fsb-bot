@@ -20,7 +20,7 @@ DB_PASSWORD=database_password
 
 # 🖥️ Database setup
 ``` sql
-- name_of_your_database
+- Database "fsb"
 ├── Table "config"
 |  ├── guild_id BIGINT PRIMARY KEY NOT NULL
 |  ├── member_role BIGINT DEFAULT 0
@@ -28,9 +28,10 @@ DB_PASSWORD=database_password
 |  ├── welcome_channel BIGINT DEFAULT 0
 |  ├── journalism_channel BIGINT DEFAULT 0
 ├── Table "nations"
-|  ├── nation_id VARCHAR(30) PRIMARY KEY NOT NULL
+|  ├── nation_id VARCHAR(50) PRIMARY KEY NOT NULL
 |  ├── display_name VARCHAR(50) NOT NULL
 |  ├── description VARCHAR(500) DEFAULT "No description." NOT NULL
+|  ├── role_id BIGINT DEFAULT 0
 |  ├── join_condition TINYINT DEFAULT 1
 |  ├── invite_permission TINYINT DEFAULT 0
 |  ├── claim_time BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL
@@ -60,20 +61,20 @@ DB_PASSWORD=database_password
 |  ├── last_passed_resolution BIGINT DEFAULT 0
 ├── Table "nationality"
 |  ├── user_id BIGINT PRIMARY KEY NOT NULL
-|  ├── nation_id VARCHAR(30) DEFAULT 0
+|  ├── nation_id VARCHAR(50) DEFAULT 0
 |  ├── rank TINYINT DEFAULT 0
 |  ├── last_rank_update BIGINT DEFAULT 0
 |  ├── joining_time BIGINT DEFAULT 0
 ├── Table "relations"
-|  ├── defining_nation VARCHAR(30) NOT NULL
-|  ├── targeted_nation VARCHAR(30) NOT NULL
+|  ├── defining_nation VARCHAR(50) NOT NULL
+|  ├── targeted_nation VARCHAR(50) NOT NULL
 |  ├── relation_score TINYINT DEFAULT 50
 |  ├── PRIMARY KEY (defining_nation, targeted_nation)
 ├── Table "sanctions"
 |  ├── resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT
 |  ├── pending BOOLEAN DEFAULT 1
-|  ├── nation_id VARCHAR(30) NOT NULL
-|  ├── sanctioned_nation VARCHAR(30) NOT NULL
+|  ├── nation_id VARCHAR(50) NOT NULL
+|  ├── sanctioned_nation VARCHAR(50) NOT NULL
 |  ├── sanction_type TINYINT
 |  ├── sanction_title VARCHAR(100) NOT NULL
 |  ├── sanction_details VARCHAR(500) NOT NULL
@@ -87,9 +88,9 @@ DB_PASSWORD=database_password
 |  ├── votes_for TEXT DEFAULT ""
 |  ├── votes_against TEXT DEFAULT ""
 ├── Table "laws"
-|  ├── resolution_id VARCHAR(36) PRIMARY KEY AUTO_INCREMENT
+|  ├── resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT
 |  ├── pending BOOLEAN DEFAULT 1
-|  ├── nation_id VARCHAR(30) NOT NULL
+|  ├── nation_id VARCHAR(50) NOT NULL
 |  ├── law_title VARCHAR(100) NOT NULL
 |  ├── law_details VARCHAR(500) NOT NULL
 |  ├── law_adoption_time BIGINT DEFAULT 0 
@@ -99,9 +100,9 @@ DB_PASSWORD=database_password
 |  ├── votes_for TEXT DEFAULT ""
 |  ├── votes_against TEXT DEFAULT ""
 ├── Table "un_membership"
-|  ├── nation_id VARCHAR(30) PRIMARY KEY NOT NULL
+|  ├── nation_id VARCHAR(50) PRIMARY KEY NOT NULL
 |  ├── pending BOOLEAN DEFAULT 1
-|  ├── invited_by VARCHAR(30) NOT NULL
+|  ├── invited_by VARCHAR(50) NOT NULL
 |  ├── joining_time BIGINT DEFAULT 0
 |  ├── vote_start BIGINT DEFAULT (UNIX_TIMESTAMP()) NOT NULL
 |  ├── vote_duration VARCHAR(3) NOT NULL
@@ -111,6 +112,12 @@ DB_PASSWORD=database_password
 ├── Table "journalism"
 |  ├── user_id BIGINT PRIMARY KEY NOT NULL
 |  ├── status TINYINT
+├── Table "invitations"
+|  ├── user_id BIGINT NOT NULL
+|  ├── nation_id VARCHAR(50) NOT NULL
+|  ├── invited_by VARCHAR(50) NOT NULL
+|  ├── creation_time BIGINT NOT NULL
+|  ├── PRIMARY KEY (user_id, nation_id)
 ```
 
 # 📥 Installation

@@ -4,13 +4,11 @@
 #include <map>
 #include <mysql/mysql.h>
 #include <string>
-#include <variant>
 #include <vector>
 
 namespace Database
 {
-    using VariantType = std::variant<std::nullptr_t, bool, int64_t, double, std::string>;
-    using QueryData = std::vector<std::map<std::string, VariantType>>;
+    using QueryData = std::vector<std::map<std::string, std::string>>;
 
     ///////////////////////////////////////////////////
     //////////////////// Functions ////////////////////
@@ -43,6 +41,16 @@ namespace Database
     (
         MYSQL*            &database,
         const std::string &query
+    );
+
+    ///////////////////////////////
+    ///// query.sanitizer.cpp /////
+    ///////////////////////////////
+
+    std::string sanitize_input
+    (
+        MYSQL*            &database,
+        const std::string &input
     );
 
     /////////////////////////////////////////////////

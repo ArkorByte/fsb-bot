@@ -50,6 +50,7 @@ int main()
     Events::guild_member_remove(bot);
 
     Events::interaction_create(bot, database);
+    Events::autocomplete(bot, database);
     Events::form_submit(bot, database);
     Events::button_click(bot, database);
 

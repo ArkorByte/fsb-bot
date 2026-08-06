@@ -3,8 +3,10 @@ project(fsb)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories (
+    ${CMAKE_SOURCE_DIR}/autocomplete
     ${CMAKE_SOURCE_DIR}/buttons
     ${CMAKE_SOURCE_DIR}/commands
+    ${CMAKE_SOURCE_DIR}/commands/nation
     ${CMAKE_SOURCE_DIR}/events
     ${CMAKE_SOURCE_DIR}/modals
     ${CMAKE_SOURCE_DIR}/utils/database
@@ -16,8 +18,10 @@ include_directories (
 )
 
 file(GLOB MAIN main.cpp)
+file(GLOB AUTOCOMPLETE autocomplete/*.cpp)
 file(GLOB BUTTONS buttons/*.cpp)
 file(GLOB COMMANDS commands/*.cpp)
+file(GLOB COMMANDS_NATION commands/nation/*.cpp)
 file(GLOB EVENTS events/*.cpp)
 file(GLOB MODALS modals/*.cpp)
 file(GLOB UTILS_DATABASE utils/database/*.cpp)
@@ -29,8 +33,10 @@ file(GLOB UTILS_TEXT utils/text/*.cpp)
 
 set(ALL_SOURCES
     ${MAIN}
+    ${AUTOCOMPLETE}
     ${BUTTONS}
     ${COMMANDS}
+    ${COMMANDS_NATION}
     ${EVENTS}
     ${MODALS}
     ${UTILS_DATABASE}
