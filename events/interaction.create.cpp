@@ -43,6 +43,8 @@ void Events::interaction_create
                 Commands::Nation::nation_info(bot, database, event);
             else if (subcommand == "invite")
                 Commands::Nation::nation_invite(bot, database, event);
+            else if (subcommand == "join")
+                Commands::Nation::join_nation(bot, database, event);
         }
         else if (event.command.get_command_name() == "ping")
             Commands::ping(bot, event);
