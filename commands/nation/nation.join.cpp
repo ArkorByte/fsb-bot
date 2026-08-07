@@ -7,7 +7,22 @@
 #include <string>
 
 /*
+    Join a nation.
 
+    Tasks:
+        1) Verify nation ID.
+        2) Verify that nation is not closed.
+        3) If nation opened, directly give nationality as citizen.
+        4) If on invitation, verify that user has pending invitation.
+        5) If invited, give nationality as citizen.
+
+    Parameters:
+        - bot       / dpp::cluster       / FSB client data.
+        - database  / MYSQL*             / FSB + MineWorld database.
+        - event     / dpp::form_submit_t / Event information.
+
+    Returns:
+        No object returned.
 */
 void Nation::join_nation
 (

@@ -4,7 +4,17 @@
 #include <string>
 
 /*
+    Get the national flag of a state.
 
+    Tasks:
+        1) Declare all flags.
+        2) Return the flag depending on provided nation ID.
+
+    Parameters:
+        - nation_id / string / ID of the nation.
+
+    Returns:
+        A string containing the flag.
 */
 std::string Text::get_nation_flag
 (
