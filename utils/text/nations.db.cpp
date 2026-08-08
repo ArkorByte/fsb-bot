@@ -87,6 +87,34 @@ std::string Text::get_join_confition
 
 
 /*
+    Get full rank name.
+
+    Tasks:
+        1) Declare all ranks.
+        2) Return one depending on index.
+
+    Parameters:
+        - index / int / Rank from database/enum.
+
+    Returns:
+        A string containing the rank name.
+*/
+std::string Text::get_rank
+(
+    const int &index
+)
+{
+    const std::vector<std::string> ranks
+    {
+        "Citizen", "Military", "Minister", "Prime Minister", "Head of State"
+    };
+
+    return ranks[index];
+}
+
+
+
+/*
     Get media freedom rating from score.
 
     Tasks:

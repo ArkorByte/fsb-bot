@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -43,7 +44,6 @@ void Nation::join_nation
     }
 
     const int join_condition = std::stoi(nations[0]["join_condition"]);
-    enum JoinCondition { OPENED = 1, CLOSED = 2 };
 
     if (join_condition == CLOSED)
     {

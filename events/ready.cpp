@@ -166,7 +166,7 @@ void Events::ready
                 // Subcommand /nation rank.
                 dpp::command_option nation_rank(dpp::co_sub_command, "rank", "Change the rank of a player within your nation.");
                 nation_rank.add_option(dpp::command_option(dpp::co_user, "member", "Member to edit.", true));
-                nation_rank.add_option(dpp::command_option(dpp::co_string, "new_rank", "New rank for the user.", true).set_auto_complete(true));
+                nation_rank.add_option(dpp::command_option(dpp::co_integer, "new_rank", "New rank for the user.", true).set_auto_complete(true));
                 nation_command.add_option(nation_rank);
 
                 // Subcommand /nation relation.

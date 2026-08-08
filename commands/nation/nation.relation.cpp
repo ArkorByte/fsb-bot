@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <algorithm>
@@ -54,7 +55,7 @@ void Nation::nation_relation
 
     const int rank = std::stoi(user_nationality[0]["rank"]);
 
-    if (rank == 0)
+    if (rank == CITIZEN || rank == MILITARY)
     {
         event.reply(dpp::message(":warning: You must be a government official to do this action.").set_flags(dpp::m_ephemeral));
         return;

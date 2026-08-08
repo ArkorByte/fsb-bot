@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -50,7 +51,7 @@ void Nation::nation_kick
 
     const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
 
-    if (executer_rank == 0)
+    if (executer_rank == CITIZEN || executer_rank == MILITARY)
     {
         event.reply(dpp::message(":warning: You do not have the required permissions to kick another member.").set_flags(dpp::m_ephemeral));
         return;
