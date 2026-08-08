@@ -16,9 +16,9 @@
         4) Set the user as head of state and update stats.
 
     Parameters:
-        - bot       / dpp::cluster       / FSB client data.
-        - database  / MYSQL*             / FSB + MineWorld database.
-        - event     / dpp::form_submit_t / Event information.
+        - bot       / dpp::cluster              / FSB client data.
+        - database  / MYSQL*                    / FSB + MineWorld database.
+        - event     / dpp::interaction_create_t / Event information.
 
     Returns:
         No object returned.

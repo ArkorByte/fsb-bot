@@ -4,7 +4,17 @@
 #include <string>
 
 /*
+    Get the national flag of a state.
 
+    Tasks:
+        1) Declare all flags.
+        2) Return the flag depending on provided nation ID.
+
+    Parameters:
+        - nation_id / string / ID of the nation.
+
+    Returns:
+        A string containing the flag.
 */
 std::string Text::get_nation_flag
 (
@@ -13,22 +23,55 @@ std::string Text::get_nation_flag
 {
     std::map<std::string, std::string> flags
     {
-        { "argentina", ":flag_ar:" },      { "australia", ":flag_au:" },    { "austria", ":flag_at:" },
-        { "belgium", ":flag_be:" },        { "brazil", ":flag_br:" },       { "canada", ":flag_ca:" },
-        { "chile", ":flag_cl:" },          { "china", ":flag_cn:" },        { "colombia", ":flag_co:" },
-        { "czech_republic", ":flag_cz:" }, { "denmark", ":flag_dk:" },      { "egypt", ":flag_eg:" },
-        { "england", ":flag_gb_eng:" },    { "finland", ":flag_fi:" },      { "france", ":flag_fr:" },
-        { "germany", ":flag_de:" },        { "greece", ":flag_gr:" },       { "india", ":flag_in:" },
-        { "indonesia", ":flag_id:" },      { "iran", ":flag_ir:" },         { "iraq", ":flag_iq:" },
-        { "ireland", ":flag_ie:" },        { "israel", ":flag_il:" },       { "italy", ":flag_it:" },
-        { "japan", ":flag_jp:" },          { "mexico", ":flag_mx:" },       { "netherlands", ":flag_nl:" },
-        { "new_zealand", ":flag_nz:" },    { "norway", ":flag_no:" },       { "peru", ":flag_pe:" },
-        { "philippines", ":flag_ph:" },    { "poland", ":flag_pl:" },       { "portugal", ":flag_pt:" },
-        { "russia", ":flag_ru:" },         { "saudi_arabia", ":flag_sa:" }, { "south_africa", ":flag_za:" },
-        { "south_korea", ":flag_kr:" },    { "spain", ":flag_es:" },        { "sweden", ":flag_se:" },
-        { "switzerland", ":flag_ch:" },    { "thailand", ":flag_th:" },     { "turkey", ":flag_tr:" },
-        { "uae", ":flag_ae:" },            { "uk", ":flag_gb:" },           { "ukraine", ":flag_ua:" },
-        { "usa", ":flag_us:" },            { "vietnam", ":flag_vn:" }
+        { "afghanistan", "🇦🇫" },              { "albania", "🇦🇱" },                          { "algeria", "🇩🇿" },           { "andorra", "🇦🇩" },
+        { "antigua_and_barbuda", "🇦🇬" },      { "argentina", "🇦🇷" },                        { "armenia", "🇦🇲" },           { "australia", "🇦🇺" },
+        { "austria", "🇦🇹" },                  { "belarus", "🇧🇾" },                          { "azerbaijan", "🇦🇿" },        { "bahamas", "🇧🇸" },
+        { "bahrain", "🇧🇭" },                  { "bangladesh", "🇧🇩" },                       { "barbados", "🇧🇧" },          { "belarus", "🇧🇾" },
+        { "belgium", "🇧🇪" },                  { "belize", "🇧🇿" },                           { "benin", "🇧🇯" },             { "bhutan", "🇧🇹" },
+        { "bolivia", "🇧🇴" },                  { "bosnia_and_herzegovina", "🇧🇦" },           { "botswana", "🇧🇼" },          { "brazil", "🇧🇷" },
+        { "brunei", "🇧🇳" },                   { "bulgaria", "🇧🇬" },                         { "burkina_faso", "🇧🇫" },      { "burundi", "🇧🇮" },
+        { "cape_verde", "🇨🇻" },               { "cambodia", "🇰🇭" },                         { "cameroon", "🇨🇲" },          { "canada", "🇨🇦" },
+        { "central_african_republic", "🇨🇫" }, { "chad", "🇹🇩" },                             { "chile", "🇨🇱" },             { "china", "🇨🇳" },
+        { "colombia", "🇨🇴" },                 { "comoros", "🇰🇲" },                          { "congo_brazzaville", "🇨🇬" }, { "costa_rica", "🇨🇷" },
+        { "cote_divoire", "🇨🇮" },             { "croatia", "🇭🇷" },                          { "cuba", "🇨🇺" },              { "cyprus", "🇨🇾" },
+        { "czechia", "🇨🇿" },                  { "denmark", "🇩🇰" },                          { "djibouti", "🇩🇯" },          { "dominica", "🇩🇲" },
+        { "dominican_republic", "🇩🇴" },       { "dr_congo", "🇨🇩" },                         { "ecuador", "🇪🇨" },           { "egypt", "🇪🇬" },
+        { "el_salvador", "🇸🇻" },              { "equatorial_guinea", "🇬🇶" },                { "eritrea", "🇪🇷" },           { "estonia", "🇪🇪" },
+        { "eswatini", "🇸🇿" },                 { "ethiopia", "🇪🇹" },                         { "fiji", "🇫🇯" },              { "finland", "🇫🇮" },
+        { "france", "🇫🇷" },                   { "gabon", "🇬🇦" },                            { "gambia", "🇬🇲" },            { "georgia", "🇬🇪" },
+        { "germany", "🇩🇪" },                  { "ghana", "🇬🇭" },                            { "greece", "🇬🇷" },            { "grenada", "🇬🇩" },
+        { "guatemala", "🇬🇹" },                { "guinea", "🇬🇳" },                           { "guinea_bissau", "🇬🇼" },     { "guyana", "🇬🇾" },
+        { "haiti", "🇭🇹" },                    { "honduras", "🇭🇳" },                         { "hungary", "🇭🇺" },           { "iceland", "🇮🇸" },
+        { "india", "🇮🇳" },                    { "indonesia", "🇮🇩" },                        { "iran", "🇮🇷" },              { "iraq", "🇮🇶" },
+        { "ireland", "🇮🇪" },                  { "israel", "🇮🇱" },                           { "italy", "🇮🇹" },             { "jamaica", "🇯🇲" },
+        { "japan", "🇯🇵" },                    { "jordan", "🇯🇴" },                           { "kazakhstan", "🇰🇿" },        { "kenya", "🇰🇪" },
+        { "kiribati", "🇰🇮" },                 { "kuwait", "🇰🇼" },                           { "kyrgyzstan", "🇰🇬" },        { "laos", "🇱🇦" },
+        { "latvia", "🇱🇻" },                   { "lebanon", "🇱🇧" },                          { "lesotho", "🇱🇸" },           { "liberia", "🇱🇷" },
+        { "libya", "🇱🇾" },                    { "liechtenstein", "🇱🇮" },                    { "lithuania", "🇱🇹" },         { "luxembourg", "🇱🇺" },
+        { "madagascar", "🇲🇬" },               { "malawi", "🇲🇼" },                           { "malaysia", "🇲🇾" },          { "maldives", "🇲🇻" },
+        { "mali", "🇲🇱" },                     { "malta", "🇲🇹" },                            { "marshall_islands", "🇲🇭" },  { "mauritania", "🇲🇷" },
+        { "mauritius", "🇲🇺" },                { "mexico", "🇲🇽" },                           { "micronesia", "🇫🇲" },        { "moldova", "🇲🇩" },
+        { "monaco", "🇲🇨" },                   { "mongolia", "🇲🇳" },                         { "montenegro", "🇲🇪" },        { "morocco", "🇲🇦" },
+        { "mozambique", "🇲🇿" },               { "myanmar", "🇲🇲" },                          { "namibia", "🇳🇦" },           { "nauru", "🇳🇷" },
+        { "nepal", "🇳🇵" },                    { "netherlands", "🇳🇱" },                      { "new_zealand", "🇳🇿" },       { "nicaragua", "🇳🇮" },
+        { "niger", "🇳🇪" },                    { "nigeria", "🇳🇬" },                          { "north_korea", "🇰🇵" },       { "north_macedonia", "🇲🇰" },
+        { "norway", "🇳🇴" },                   { "oman", "🇴🇲" },                             { "pakistan", "🇵🇰" },          { "palau", "🇵🇼" },
+        { "panama", "🇵🇦" },                   { "papua_new_guinea", "🇵🇬" },                 { "paraguay", "🇵🇾" },          { "peru", "🇵🇪" },
+        { "philippines", "🇵🇭" },              { "poland", "🇵🇱" },                           { "portugal", "🇵🇹" },          { "qatar", "🇶🇦" },
+        { "romania", "🇷🇴" },                  { "russia", "🇷🇺" },                           { "rwanda", "🇷🇼" },            { "saint_kitts_and_nevis", "🇰🇳" },
+        { "saint_lucia", "🇱🇨" },              { "saint_vincent_and_the_grenadines", "🇻🇨" }, { "samoa", "🇼🇸" },             { "san_marino", "🇸🇲" },
+        { "sao_tome_and_principe", "🇸🇹" },    { "saudi_arabia", "🇸🇦" },                     { "senegal", "🇸🇳" },           { "serbia", "🇷🇸" },
+        { "seychelles", "🇸🇨" },               { "sierra_leone", "🇸🇱" },                     { "singapore", "🇸🇬" },         { "slovakia", "🇸🇰" },
+        { "slovenia", "🇸🇮" },                 { "solomon_islands", "🇸🇧" },                  { "somalia", "🇸🇴" },           { "south_africa", "🇿🇦" },
+        { "south_korea", "🇰🇷" },              { "south_sudan", "🇸🇸" },                      { "spain", "🇪🇸" },             { "sri_lanka", "🇱🇰" },
+        { "sudan", "🇸🇩" },                    { "suriname", "🇸🇷" },                         { "sweden", "🇸🇪" },            { "switzerland", "🇨🇭" },
+        { "syria", "🇸🇾" },                    { "tajikistan", "🇹🇯" },                       { "tanzania", "🇹🇿" },          { "thailand", "🇹🇭" },
+        { "timor_leste", "🇹🇱" },              { "togo", "🇹🇬" },                             { "tonga", "🇹🇴" },             { "trinidad_and_tobago", "🇹🇹" },
+        { "tunisia", "🇹🇳" },                  { "turkey", "🇹🇷" },                           { "turkmenistan", "🇹🇲" },      { "tuvalu", "🇹🇻" },
+        { "uganda", "🇺🇬" },                   { "ukraine", "🇺🇦" },                          { "uae", "🇦🇪" },               { "uk", "🇬🇧" },
+        { "usa", "🇺🇸" },                      { "uruguay", "🇺🇾" },                          { "uzbekistan", "🇺🇿" },        { "vanuatu", "🇻🇺" },
+        { "vatican_city", "🇻🇦" },             { "venezuela", "🇻🇪" },                        { "vietnam", "🇻🇳" },           { "yemen", "🇾🇪" },
+        { "zambia", "🇿🇲" },                   { "zimbabwe", "🇿🇼" }
     };
 
     return flags[nation_id];

@@ -161,7 +161,7 @@ void Events::ready
 
                 // Subcommand /nation leave.
                 dpp::command_option nation_leave(dpp::co_sub_command, "leave", "Leave your nation.");
-                nation_leave.add_option(nation_leave);
+                nation_command.add_option(nation_leave);
 
                 // Subcommand /nation rank.
                 dpp::command_option nation_rank(dpp::co_sub_command, "rank", "Change the rank of a player within your nation.");
@@ -169,11 +169,11 @@ void Events::ready
                 nation_rank.add_option(dpp::command_option(dpp::co_string, "new_rank", "New rank for the user.", true).set_auto_complete(true));
                 nation_command.add_option(nation_rank);
 
-                // Subcommand /nation relationship.
-                dpp::command_option nation_relationship(dpp::co_sub_command, "relationship", "Change relationship percentage with another nation.");
-                nation_relationship.add_option(dpp::command_option(dpp::co_string, "nation_id", "ID of the nation.", true));
-                nation_relationship.add_option(dpp::command_option(dpp::co_number, "percentage", "New relationship percentage (0 ~ 100).", true));
-                nation_command.add_option(nation_relationship);
+                // Subcommand /nation relation.
+                dpp::command_option nation_relation(dpp::co_sub_command, "relation", "Change relation score with another nation.");
+                nation_relation.add_option(dpp::command_option(dpp::co_string, "nation_id", "ID of the nation.", true).set_auto_complete(true));
+                nation_relation.add_option(dpp::command_option(dpp::co_integer, "score", "New relationship score (0 ~ 100).", true));
+                nation_command.add_option(nation_relation);
 
             slash_commands.push_back(nation_command);
 

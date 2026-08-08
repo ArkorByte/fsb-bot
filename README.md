@@ -68,7 +68,7 @@ DB_PASSWORD=database_password
 ├── Table "relations"
 |  ├── defining_nation VARCHAR(50) NOT NULL
 |  ├── targeted_nation VARCHAR(50) NOT NULL
-|  ├── relation_score TINYINT DEFAULT 50
+|  ├── score TINYINT DEFAULT 50
 |  ├── PRIMARY KEY (defining_nation, targeted_nation)
 ├── Table "sanctions"
 |  ├── resolution_id BIGINT PRIMARY KEY AUTO_INCREMENT
