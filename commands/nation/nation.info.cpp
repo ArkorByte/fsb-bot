@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -68,15 +69,17 @@ void Nation::nation_info
     ///// Field "members". /////
     ////////////////////////////
 
-    Utils::Database::QueryData leader_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = 3 LIMIT 1");
-    Utils::Database::QueryData pm_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = 2 LIMIT 1");
-    Utils::Database::QueryData government = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND RANK = 1");
-    Utils::Database::QueryData citizens = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND RANK = 0");
+    Utils::Database::QueryData leader_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(LEADER) + "' LIMIT 1");
+    Utils::Database::QueryData pm_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(PRIME_MINISTER) + "' LIMIT 1");
+    Utils::Database::QueryData government = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(MINISTER) + "'");
+    Utils::Database::QueryData military = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(MILITARY) + "'");
+    Utils::Database::QueryData citizens = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(CITIZEN) + "'");
 
     const std::string leader = (leader_nationality.size() != 0) ? "<@" + leader_nationality[0]["user_id"] + ">" : "None";
     const std::string prime_minister = (pm_nationality.size() != 0) ? "<@" + pm_nationality[0]["user_id"] + ">" : "None";
 
     std::string government_list;
+    std::string army_list;
     std::string citizens_list;
 
     if (government.size() != 0)
@@ -91,6 +94,18 @@ void Nation::nation_info
     }
     else government_list = "None";
 
+    if (military.size() != 0)
+    {
+        for (std::map<std::string, std::string> &user : military)
+        {
+            if (!army_list.empty())
+                army_list += ", ";
+
+            army_list += "<@" + user["user_id"] + ">";
+        }
+    }
+    else army_list = "None";
+
     if (citizens.size() != 0)
     {
         for (std::map<std::string, std::string> &user : citizens)
@@ -103,7 +118,7 @@ void Nation::nation_info
     }
     else citizens_list = "None";
 
-    embed.add_field(":bust_in_silhouette: Members", "**Head of State**: " + leader + ".\n**Prime minister**: " + prime_minister + ".\n**Government**: " + government_list + ".\n**Citizens**: " + citizens_list + ".");
+    embed.add_field(":bust_in_silhouette: Members", "**Head of State**: " + leader + ".\n**Prime minister**: " + prime_minister + ".\n**Government**: " + government_list + ".\n**Military**: " + army_list + ".\n**Citizens**: " + citizens_list + ".");
 
     //////////////////////////////
     ///// Field "statistics" /////
