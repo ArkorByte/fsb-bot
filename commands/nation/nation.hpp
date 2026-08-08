@@ -60,6 +60,17 @@ namespace Nation
         MYSQL*                          &database,
         const dpp::interaction_create_t &event
     );
+
+    ////////////////////////////
+    ///// nation.leave.cpp /////
+    ////////////////////////////
+
+    void leave_nation
+    (
+        dpp::cluster                    &bot,
+        MYSQL*                          &database,
+        const dpp::interaction_create_t &event
+    );
 }
 
 #endif

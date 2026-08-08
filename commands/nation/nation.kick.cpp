@@ -4,6 +4,7 @@
 
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
+#include <string>
 
 /*
     Kick a member from a nation.
