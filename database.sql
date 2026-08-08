@@ -54,7 +54,7 @@ CREATE TABLE nationality (
 CREATE TABLE relations (
     defining_nation VARCHAR(50) NOT NULL,
     targeted_nation VARCHAR(50) NOT NULL,
-    relation_score TINYINT DEFAULT 50,
+    score TINYINT DEFAULT 50,
     PRIMARY KEY (defining_nation, targeted_nation)
 );
 

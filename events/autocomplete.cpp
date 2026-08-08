@@ -34,7 +34,7 @@ void Events::autocomplete
 
             if (subcommand == "claim")
                 Autocomplete::empty_nations(bot, database, event);
-            else if (subcommand == "info" || subcommand == "join" || subcommand == "relationship")
+            else if (subcommand == "info" || subcommand == "join" || subcommand == "relation")
                 Autocomplete::nations(bot, database, event);
             else if (subcommand == "rank")
                 Autocomplete::ranks(bot, event);
