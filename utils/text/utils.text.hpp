@@ -33,6 +33,11 @@ namespace Text
         const int &index
     );
 
+    std::string get_rank
+    (
+        const int &score
+    );
+
     std::string get_media_freedom_rating
     (
         const int &score

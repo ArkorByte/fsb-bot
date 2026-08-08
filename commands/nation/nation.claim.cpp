@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -41,7 +42,7 @@ void Nation::claim_nation
         return;
     }
 
-    Utils::Database::QueryData leadership = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '3' LIMIT 1");
+    Utils::Database::QueryData leadership = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "' AND rank = '" + std::to_string(LEADER) + "' LIMIT 1");
 
     if (leadership.size() != 0)
     {
@@ -64,9 +65,9 @@ void Nation::claim_nation
             event.reply(dpp::message(":warning: You are already a member of a nation! To proceed, leave your current state.").set_flags(dpp::m_ephemeral));
             return;
         }
-        else Utils::Database::db_query(database, "UPDATE nationality SET nation_id = '" + nation_id + "', rank = 3, last_rank_update = '" + now + "', joining_time = '" + now + "' WHERE user_id = '" + user_id + "'");
+        else Utils::Database::db_query(database, "UPDATE nationality SET nation_id = '" + nation_id + "', rank = '" + std::to_string(LEADER) + "', last_rank_update = '" + now + "', joining_time = '" + now + "' WHERE user_id = '" + user_id + "'");
     }
-    else Utils::Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + user_id + "', '" + nation_id + "', 3, '" + now + "', '" + now + "')");
+    else Utils::Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + std::to_string(LEADER) + "', '" + now + "', '" + now + "')");
 
     const std::string display_name = nations[0]["display_name"];
 

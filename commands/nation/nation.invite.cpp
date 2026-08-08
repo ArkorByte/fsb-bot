@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -60,13 +61,6 @@ void Nation::nation_invite
         return;
     }
 
-    enum JoinCondition
-    {
-        OPENED = 0,
-        ON_INVITATION = 1,
-        CLOSED = 2
-    };
-
     const int join_condition = std::stoi(nations[0]["join_condition"]);
 
     if (join_condition == OPENED)
@@ -84,7 +78,7 @@ void Nation::nation_invite
     const int invite_permission = std::stoi(nations[0]["invite_permission"]);
     const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
 
-    if (executer_rank < invite_permission)
+    if ((invite_permission == GOV_ONLY && executer_rank < MINISTER) || (invite_permission == PM_MINIMUM && executer_rank < PRIME_MINISTER) || (invite_permission == LEADER_ONLY && executer_rank < LEADER))
     {
         event.reply(dpp::message(":warning: You are not allowed to send invitations due to government laws.").set_flags(dpp::m_ephemeral));
         return;

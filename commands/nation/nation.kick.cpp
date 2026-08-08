@@ -1,5 +1,6 @@
 #include "nation.hpp"
 
+#include "../../config/enumerations.hpp"
 #include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
@@ -40,7 +41,7 @@ void Nation::nation_kick
         return;
     }
 
-    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + executer_id + "' LIMIT 1");
 
     if (executer_id.size() == 0)
     {
@@ -50,7 +51,7 @@ void Nation::nation_kick
 
     const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
 
-    if (executer_rank == 0)
+    if (executer_rank == CITIZEN || executer_rank == MILITARY)
     {
         event.reply(dpp::message(":warning: You do not have the required permissions to kick another member.").set_flags(dpp::m_ephemeral));
         return;
@@ -74,5 +75,5 @@ void Nation::nation_kick
     }
 
     Utils::Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + user_id + "'");
-    event.reply(dpp::message(":White_check_mark: This member has been kicked from the nation.").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(":white_check_mark: This member has been kicked from the nation.").set_flags(dpp::m_ephemeral));
 }

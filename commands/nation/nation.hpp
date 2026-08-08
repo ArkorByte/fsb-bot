@@ -72,6 +72,17 @@ namespace Nation
         const dpp::interaction_create_t &event
     );
 
+    ///////////////////////////
+    ///// nation.rank.cpp /////
+    ///////////////////////////
+
+    void nation_rank
+    (
+        dpp::cluster                    &bot,
+        MYSQL*                          &database,
+        const dpp::interaction_create_t &event
+    );
+
     ///////////////////////////////
     ///// nation.relation.cpp /////
     ///////////////////////////////

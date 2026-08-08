@@ -31,8 +31,9 @@ void Autocomplete::ranks
         event.command.token,
         dpp::interaction_response(dpp::ir_autocomplete_reply)
             .add_autocomplete_choice(dpp::command_option_choice("Citizen", "0"))
-            .add_autocomplete_choice(dpp::command_option_choice("Government", "1"))
-            .add_autocomplete_choice(dpp::command_option_choice("Prime Minister", "2"))
-            .add_autocomplete_choice(dpp::command_option_choice("Head of State", "3"))
+            .add_autocomplete_choice(dpp::command_option_choice("Military", "1"))
+            .add_autocomplete_choice(dpp::command_option_choice("Minister", "2"))
+            .add_autocomplete_choice(dpp::command_option_choice("Prime Minister", "3"))
+            .add_autocomplete_choice(dpp::command_option_choice("Head of State", "4"))
     );
 }
