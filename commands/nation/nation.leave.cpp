@@ -41,7 +41,7 @@ void Nation::leave_nation
     }
 
     const std::string nation_id = user_nationality[0]["nation_id"];
-    Utils::Database::QueryData nation_members = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + user_id + "' AND nation_id = '" + nation_id + "'");
+    Utils::Database::QueryData nation_members = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE nation_id = '" + nation_id + "'");
 
     const int member_count = nation_members.size();
     const int rank = std::stoi(user_nationality[0]["rank"]);
