@@ -75,5 +75,5 @@ void Nation::nation_kick
     }
 
     Utils::Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + user_id + "'");
-    event.reply(dpp::message(":White_check_mark: This member has been kicked from the nation.").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(":white_check_mark: This member has been kicked from the nation.").set_flags(dpp::m_ephemeral));
 }
