@@ -41,7 +41,7 @@ void Nation::nation_kick
         return;
     }
 
-    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    Utils::Database::QueryData executer_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + executer_id + "' LIMIT 1");
 
     if (executer_id.size() == 0)
     {
