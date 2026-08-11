@@ -71,7 +71,7 @@ std::string Text::get_nation_flag
         { "uganda", "🇺🇬" },                   { "ukraine", "🇺🇦" },                          { "uae", "🇦🇪" },               { "uk", "🇬🇧" },
         { "usa", "🇺🇸" },                      { "uruguay", "🇺🇾" },                          { "uzbekistan", "🇺🇿" },        { "vanuatu", "🇻🇺" },
         { "vatican_city", "🇻🇦" },             { "venezuela", "🇻🇪" },                        { "vietnam", "🇻🇳" },           { "yemen", "🇾🇪" },
-        { "zambia", "🇿🇲" },                   { "zimbabwe", "🇿🇼" }
+        { "zambia", "🇿🇲" },                   { "zimbabwe", "🇿🇼" },                         { "angola", "🇦🇴" }
     };
 
     return flags[nation_id];

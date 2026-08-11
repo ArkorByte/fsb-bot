@@ -8,7 +8,7 @@
 
 namespace Database
 {
-    using QueryData = std::vector<std::map<std::string, std::string>>;
+    using Output = std::vector<std::map<std::string, std::string>>;
 
     ///////////////////////////////////////////////////
     //////////////////// Functions ////////////////////
@@ -37,7 +37,7 @@ namespace Database
     ///// queries.handler.cpp /////
     ///////////////////////////////
 
-    QueryData db_query
+    Output db_query
     (
         MYSQL*            &database,
         const std::string &query

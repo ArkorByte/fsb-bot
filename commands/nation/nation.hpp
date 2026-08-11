@@ -17,6 +17,17 @@ namespace Nation
         const dpp::interaction_create_t &event
     );
 
+    /////////////////////////////
+    ///// nation.config.cpp /////
+    /////////////////////////////
+
+    void nation_config
+    (
+        dpp::cluster                    &bot,
+        MYSQL*                          &database,
+        const dpp::interaction_create_t &event
+    );
+
     ///////////////////////////
     ///// nation.info.cpp /////
     ///////////////////////////

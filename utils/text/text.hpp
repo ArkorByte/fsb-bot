@@ -28,14 +28,19 @@ namespace Text
         const int &index
     );
 
-    std::string get_join_confition
+    std::string get_join_condition
+    (
+        const int &index
+    );
+
+    std::string get_invite_permission
     (
         const int &index
     );
 
     std::string get_rank
     (
-        const int &score
+        const int &index
     );
 
     std::string get_media_freedom_rating

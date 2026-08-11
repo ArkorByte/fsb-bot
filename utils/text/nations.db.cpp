@@ -74,7 +74,7 @@ std::string Text::get_ideology
     Returns:
         A string containing the join condition name.
 */
-std::string Text::get_join_confition
+std::string Text::get_join_condition
 (
     const int &index
 )
@@ -82,6 +82,31 @@ std::string Text::get_join_confition
     const std::vector<std::string> condition_values { "Opened", "On Invitation", "Closed" };
 
     return condition_values[index];
+}
+
+
+
+/*
+    Get full invite permission name.
+
+    Tasks:
+        1) Declare all invite permissions.
+        2) Return one depending on index.
+
+    Parameters:
+        - index / int / Invite permission from database.
+
+    Returns:
+        A string containing the invite permission name.
+*/
+std::string Text::get_invite_permission
+(
+    const int &index
+)
+{
+    const std::vector<std::string> invite_permissions { "Everyone", "Government Only", "Prime Minister+", "Head of State Only" };
+
+    return invite_permissions[index];
 }
 
 

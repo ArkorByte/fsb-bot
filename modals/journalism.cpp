@@ -112,7 +112,7 @@ void Modals::journalism
         .set_label("Censor")
         .set_emoji(u8"🤫")
         .set_type(dpp::cot_button)
-        .set_style(dpp::cos_premium)
+        .set_style(dpp::cos_secondary)
         .set_id("journalism_censor")
     )
     .add_component (

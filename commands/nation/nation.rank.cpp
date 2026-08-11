@@ -16,7 +16,7 @@
         3) Verify both user nationalities and compare nation IDs.
         4) Verify that executer has higher rank.
         5) If new rank is PM or Head of State, we demote the current member holding the role.
-        6) Update user rank in database.
+        6) Update user rank and stats in database.
 
     Parameters:
         - bot       / dpp::cluster              / FSB client data.
@@ -83,14 +83,34 @@ void Nation::nation_rank
         return;
     }
 
-    if (new_rank == PRIME_MINISTER)
-        Utils::Database::db_query(database, "UPDATE nationality SET rank = '" + std::to_string(CITIZEN) + "' WHERE nation_id = '" + user_nation_id + "' AND rank = '" + std::to_string(PRIME_MINISTER) + "'");
+    Utils::Database::QueryData nations = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + user_nation_id + "' LIMIT 1");
+
+    if (nations.size() == 0)
+    {
+        event.reply(dpp::message(":warning: Something went wrong.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    const std::string leadership_changes = std::to_string(std::stoi(nations[0]["leadership_changes"]) + 1);
+    const std::string government_changes = std::to_string(std::stoi(nations[0]["government_changes"]) + 1);
+    const std::string now = std::to_string(Utils::Miscellaneous::get_current_timestamp());
+
+    if (new_rank == PRIME_MINISTER || new_rank == MINISTER)
+    {
+        Utils::Database::db_query(database, "UPDATE nations SET government_changes = '" + government_changes + "', last_government_change = '" + now + "' WHERE nation_id = '" + user_nation_id + "'");
+
+        if (new_rank == PRIME_MINISTER)
+            Utils::Database::db_query(database, "UPDATE nationality SET rank = '" + std::to_string(MINISTER) + "' WHERE nation_id = '" + user_nation_id + "' AND rank = '" + std::to_string(PRIME_MINISTER) + "'");
+    }
 
     if (new_rank == LEADER)
-        Utils::Database::db_query(database, "UPDATE nationality SET rank = '" + std::to_string(CITIZEN) + "' WHERE nation_id = '" + user_nation_id + "' AND rank = '" + std::to_string(LEADER) + "'");
+    {
+        Utils::Database::db_query(database, "UPDATE nations SET leadership_changes = '" + leadership_changes + "', last_leadership_change = '" + now + "' WHERE nation_id = '" + user_nation_id + "'");
+        Utils::Database::db_query(database, "UPDATE nationality SET rank = '" + std::to_string(MINISTER) + "' WHERE nation_id = '" + user_nation_id + "' AND rank = '" + std::to_string(LEADER) + "'");
+    }
 
     Utils::Database::db_query(database, "UPDATE nationality SET rank = '" + std::to_string(new_rank) + "' WHERE user_id = '" + user_id + "'");
     const std::string rank = Utils::Text::get_rank(new_rank);
 
-    event.reply(dpp::message(":white_check_mark: Rank " + rank + " was given to this user. Note that if the Prime Minister or Head of State ranks were given, the current members holding these ranks were demoted to Citizen.").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(":white_check_mark: Rank " + rank + " was given to this user. Note that if the Prime Minister or Head of State ranks were given, the current members holding these ranks were demoted to Minister.").set_flags(dpp::m_ephemeral));
 }

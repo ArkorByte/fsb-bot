@@ -39,6 +39,8 @@ void Events::interaction_create
 
             if (subcommand == "claim")
                 Commands::Nation::claim_nation(bot, database, event);
+            else if (subcommand == "config")
+                Commands::Nation::nation_config(bot, database, event);
             else if (subcommand == "info")
                 Commands::Nation::nation_info(bot, database, event);
             else if (subcommand == "invite")
