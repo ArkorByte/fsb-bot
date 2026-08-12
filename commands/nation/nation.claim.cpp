@@ -148,7 +148,7 @@ void Nation::claim_nation
 
     if (config.size() == 0)
     {
-        Logs::log("Warning: No config for " + std::to_string(guild_id) + " -> /nation claim.");
+        Logs::log("Warning: No config data -> /nation claim.");
         return;
     }
 
@@ -174,13 +174,9 @@ void Nation::claim_nation
     else Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
 
     ///////// f. /////////
-    if (dpp::find_role(leader_role) -> guild_id != guild_id)
+    bot.guild_member_add_role(guild_id, user_id, leader_role, [&user_id](const dpp::confirmation_callback_t &callback)
     {
-        bot.guild_member_add_role(guild_id, user_id, leader_role, [&user_id](const dpp::confirmation_callback_t &callback)
-        {
-            if (callback.is_error())
-                Logs::log("Warning: Failed to give leader role to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation claim.");
-        });
-    }
-    else Logs::log("Warning: Bad leader role ID -> /nation claim.");
+        if (callback.is_error())
+            Logs::log("Warning: Failed to give leader role to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation claim.");
+    });
 }

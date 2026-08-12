@@ -69,8 +69,8 @@ void Nation::nation_invite
 
     if (nations.size() == 0)
     {
-        event.reply(dpp::message(":prohibited: Something went wrong while retrieving information about nation `" + nation_id + "`.").set_flags(dpp::m_ephemeral));
-        return Logs::log("Warning: Nation ID " + nation_id + " missing in database -> /nation invite.");
+        Logs::log("Warning: Nation ID " + nation_id + " missing in database -> /nation invite.");
+        return event.reply(dpp::message(":prohibited: Something went wrong while retrieving information about nation `" + nation_id + "`.").set_flags(dpp::m_ephemeral));
     }
 
     ///////// d. /////////
