@@ -16,25 +16,18 @@
     Tasks:
         1) We start with some basic verifications.
             a. Sanitize user input to prevent SQL injections as much as possible.
-            b. Try to get some information from the database in the "nations" table using the nation ID provided by the user.
-               If we get no data back, it is likely due to a wrong nation ID.
-            c. From the data previously retrieved, we verify that the nation is not set as closed by the nation government.
-            d. Try to get some information about the user in the "nationality" table.
-               If we get some data, it means that the user is already a member of a nation.
-            e. Try to get some information about the nation that the user is part of to make a cleaner message with nation name and user rank.
-               If we get no data back, we make a generic message and log the error.
-        2) If all basic checks validated, we process the joining request.
-            a. If the nation is set as opened by nation government, we immediatly register the user as citizen of the nation in the database and send a clean message.
-            b. If the nation is set as on invitation, we verify that the user do actually have one.
-            c. If the user has an invitation, we verify that the invitation has not expired.
-               On expiration, we directly delete the invitation from the database based on user ID and nation ID.
-            d. Get bot config to retrieve "gossip" channel and role, flags URL and the citizen role.
-               The gossip channel is where we upload some casual information, and the gossip role is the role to mention to notify users.
-               Then, flags URL are where we have the flags named by nation IDs stored online, and the citizen role is purely cosmetic and informational.
-            e. Post an embed informing players about the leadership change if the channel and role do exist.
-               We also precise who invited the user if it was on invitation only.
-            f. Try to give the citizen role to the user.
-               If the role do not exist or if it fails, likely due to permission errors, we log the error.
+            b. Try to get some information about the nation from the database to check that it exists.
+            c. Verify that the nation was not set as "closed" by the government.
+            d. Try to get some information about the user in the "nationality" table. If we get some data back, it means that the user is already part of a nation.
+            e. Try to get some information about the nation that the user is part of to make a clean detailed error message.
+        2) We process the joining request.
+            a. If the nation is set as "opened" by the government, we immediatly register the user as citizen of the nation in the database.
+            b. If the nation is set as "on invitation", we verify that the user has a pending invitation.
+            c. Verify that the invitation has not expired yet. If it expired, we directly delete the invitation from the database.
+            d. Get bot config to retrieve essentials information for later.
+            e. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the new citizen.
+               We also make a "dynamic" notification in case the user joined with an invitation to precise who invited them.
+            f. Try to give the Citizen role to the user.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.
