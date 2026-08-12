@@ -60,7 +60,7 @@ void Nation::nation_kick
 
     if (executer_id.size() == 0)
     {
-        event.reply(dpp::message(":prohibited: You can not kick anyone while being stateless.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not perform this action while being stateless.").set_flags(dpp::m_ephemeral));
         return;
     }
 
