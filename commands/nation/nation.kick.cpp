@@ -16,7 +16,7 @@
         1) We start with some basic verifications.
             a. Compare the user ID provided and the ID of the command executer. We deny the request if the IDs match.
             b. Try to get some information about the executer in the "nationality" table. If we get no data back, it likely means that the executer is stateless.
-            c. Try to get some information about the executer nation using the previously retrieved nation ID.
+            c. Try to get some information about the executer nation.
             d. Try to get some information about the user in the "nationality" table. If we get no data back, it likely means that the user is stateless.
             e. Check that both users are in the same nation by comparing nation IDs. If it does not match, we query some information about user nation for a cleaner error message.
             f. Verify that executer has a rank that is not CITIZEN or MILITARY to grant the permission to kick.

@@ -14,19 +14,14 @@
 
     Tasks:
         1) We start with some basic verifications.
-            a. Get the "player" parameter from the slash command and compare the executer and provided IDs.
-            b. Try to get some information about the executer in the "nationality" table.
-               If no data comes out, it means that the user is stateless and can not send any invitation.
-            c. Try to get some information about the executer nation using the retrieved nation ID from previous request.
-               If we get no data back, something went wrong and it is likely an old no-longer-existing ID left behind.
-            d. Verify the "join condition" configured by the government of the nation.
-               If the nation is set as closed, no one is allowed to join and we disallow invitations.
-               If the nation is set as opened, anyone can join at anytime. We disallow invitations to save server resources since it is useless.
-        2) As the server is on invitation mode, we process the request.
+            a. Compare the user ID provided and the ID of the command executer. We deny the request if the IDs match.
+            b. Try to get some information about the executer in the "nationality" table. If we get no data back, it likely means that the executer is stateless.
+            c. Try to get some information about the executer nation.
+            d. Verify that the nation was not set as "closed" or "opened" by the government.
+        2) Process the invitation request.
             a. Verify that executer meets permission requirements to send invitations according to nation government config.
-            b. Check that the user do not already have a pending invitation for them to join the nation.
-               If we do have an invitation pending, we verify that it did not expire. If it did not, we cancel the invitation process.
-            c. Register the invitation into the database and send a confirmation message to the user.
+            b. Check that the user do not already have a pending invitation. If we find one, we check that it did not expire.
+            c. Register the new pending invitation.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.
