@@ -16,31 +16,18 @@
     Tasks:
         1) We start with some verifications.
             a. Sanitize user input to prevent SQL injections as much as possible.
-            b. Try to get some information from the database about this nation using the nation ID provided by the user.
-               On failure, it is very likely that the nation does not exist.
+            b. Try to get some information about the nation from the database to check that it exists.
             c. Try to get some information about a potential user that has the LEADER rank for this nation ID.
                If we get any data back, it means that the nation already has a Head of State and can not be claimed.
-            d. Try to find the user in the "nationality" table of the database.
-               If we get any data back, that means that the user is already part of a nation.
-            e. If the user already has a nation, we try to find some information about it from the database using the nation ID retrieved from previous query.
-               If we get no data back, something went wrong and it is likely an old no-longer-existing ID left behind.
-               Otherwise, we get the information to make a clean answer to the user giving their current nation and rank.
-        2) If all previous verifications passed, we grant ownership to the user.
-            a. Register the user into the "nationality" table as the leader of the nation.
-               We also update some statistics for this nation in the "nations" table.
-               Finally, we retrieve the nation flag as emoji and make a clean confirmation message. The interaction with the user ends here.
-            b. Retrieve the role ID of the nation from a previously made query.
-               Check that the role does exist on the server, if it does not, we create a new role using the nation flag and display name.
-               Finally, we register the new role ID.
-            c. Give the nation role to the user and check for any failure.
-               If it fails, we just log the error. It is very likely due to some permission errors.
-            d. Get bot config to retrieve "gossip" channel and role, flags URL and the leader role.
-               The gossip channel is where we upload some casual information, and the gossip role is the role to mention to notify users.
-               Then, flags URL are where we have the flags named by nation IDs stored online, and the leader role is purely cosmetic and informational.
-            e. Post an embed informing players about the leadership change if the channel and role do exist.
-               If the channel and/or role do not exist, we log the issue.
+            d. Try to find the user in the "nationality" table of the database. If we get some data back, the user is already part of a nation.
+            e. Try to find some information about the user nation for a cleaner and more detailed error message.
+        2) Grant ownership to the user.
+            a. Register the user into the "nationality" table as the leader of the nation, update nation statistics and get some information for a cleaner confirmation message.
+            b. Retrieve the nation role ID of the nation, we verify that the role exists. If it does not, we create it and register the new role ID.
+            c. Try to give the nation role to the user.
+            d. Get bot config to retrieve essentials information for later.
+            e. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the leadership change.
             f. Try to give the Head of State role to the user.
-               If the role do not exist or if it fails, likely due to permission errors, we log the error.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.

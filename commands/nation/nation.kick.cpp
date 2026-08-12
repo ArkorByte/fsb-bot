@@ -25,8 +25,8 @@
         2) Process the kick request.
             a. Remove the user from the "nationality" table.
             b. Get nation role ID and try to remove it from the user.
-            c. Determine the role to remove depending on user rank, and get the ID from the "config" table.
-            d. Check that the "gossip" channel and role are valid and send an embed notifying other players of the kick.
+            c. Determine the role to remove depending on user rank, and get some required IDs from the "config" table.
+            d. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the kick.
             e. Try to remove the rank role of the user.
 
     Parameters (variable_name / type / description):
