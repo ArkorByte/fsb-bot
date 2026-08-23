@@ -27,7 +27,6 @@
             d. Get bot config to retrieve essentials information for later.
             e. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the new citizen.
                We also make a "dynamic" notification in case the user joined with an invitation to precise who invited them.
-            f. Try to give the Citizen role to the user.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.
@@ -130,7 +129,7 @@ void Nation::join_nation
     }
 
     ///////// d. /////////
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, citizen_role LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role LIMIT 1");
     const dpp::snowflake guild_id = event.command.guild_id;
 
     if (config.size() == 0)
@@ -142,45 +141,35 @@ void Nation::join_nation
     const std::string gossip_channel = config[0]["gossip_channel"];
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
-    const std::string citizen_role = config[0]["citizen_role"];
 
     ///////// e. /////////
     const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
     const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
 
-    if (channel_exists && role_exists)
+    if (!channel_exists && !role_exists)
     {
-        std::string was_invited;
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
+        return;
+    }
 
-        if (join_condition == ON_INVITATION)
+    std::string was_invited;
+
+    if (join_condition == ON_INVITATION)
+    {
+        Database::Output inviter = Database::db_query(database, "SELECT rank WHERE user_id = '" + inviter_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
+
+        if (inviter.size() != 0)
         {
-            Database::Output inviter = Database::db_query(database, "SELECT rank WHERE user_id = '" + inviter_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
-
-            if (inviter.size() != 0)
-            {
-                const std::string rank = Text::get_rank(std::stoi(inviter[0]["rank"]));
-                was_invited = " They were invited by " + rank + " <@" + inviter_id + ">.";
-            }
+            const std::string rank = Text::get_rank(std::stoi(inviter[0]["rank"]));
+            was_invited = " They were invited by " + rank + " <@" + inviter_id + ">.";
         }
-
-        const dpp::embed embed = dpp::embed()
-        .set_color(dpp::colors::light_green)
-        .set_title("New citizen")
-        .set_thumbnail(flags_url + nation_id + ".png")
-        .set_description("<@" + user_id + "> just received his citizenship from " + display_name + "." + was_invited);
-
-        bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">").add_embed(embed));
     }
-    else Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation join.");
 
-    ///////// f. /////////
-    if (dpp::find_role(citizen_role) -> guild_id != guild_id)
-    {
-        bot.guild_member_add_role(guild_id, user_id, citizen_role, [&user_id](const dpp::confirmation_callback_t &callback)
-        {
-            if (callback.is_error())
-                Logs::log("Warning: Failed to give citizen role to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation join.");
-        });
-    }
-    else Logs::log("Warning: Bad citizen role ID -> /nation join.");
+    const dpp::embed embed = dpp::embed()
+    .set_color(dpp::colors::light_green)
+    .set_title("New Citizen")
+    .set_thumbnail(flags_url + nation_id + ".png")
+    .set_description("<@" + user_id + "> just received his citizenship from " + display_name + "." + was_invited);
+
+    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

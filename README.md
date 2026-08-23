@@ -28,11 +28,6 @@ DB_PASSWORD=database_password
 |  ├── flags_url TEXT DEFAULT ''
 |  ├── gossip_channel BIGINT DEFAULT 0
 |  ├── gossip_role BIGINT DEFAULT 0
-|  ├── leader_role BIGINT DEFAULT 0
-|  ├── pm_role BIGINT DEFAULT 0
-|  ├── minister_role BIGINT DEFAULT 0
-|  ├── military_role BIGINT DEFAULT 0
-|  ├── citizen_role BIGINT DEFAULT 0
 ├── Table "nations"
 |  ├── nation_id VARCHAR(50) PRIMARY KEY NOT NULL
 |  ├── display_name VARCHAR(50) NOT NULL

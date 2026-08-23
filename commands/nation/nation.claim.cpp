@@ -27,7 +27,6 @@
             c. Try to give the nation role to the user.
             d. Get bot config to retrieve essentials information for later.
             e. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the leadership change.
-            f. Try to give the Head of State role to the user.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.
@@ -131,7 +130,7 @@ void Nation::claim_nation
     });
 
     ///////// d. /////////
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url, leader_role FROM config LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -142,28 +141,22 @@ void Nation::claim_nation
     const std::string gossip_channel = config[0]["gossip_channel"];
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
-    const std::string leader_role = config[0]["leader_role"];
 
     ///////// e. /////////
     const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
     const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
 
-    if (channel_exists && role_exists)
+    if (!channel_exists && !role_exists)
     {
-        const dpp::embed embed = dpp::embed()
-        .set_color(dpp::colors::light_green)
-        .set_title("Leadership change")
-        .set_thumbnail(flags_url + nation_id + ".png")
-        .set_description("<@" + user_id + "> is now the new Head of State of " + display_name + ". This nation has changed of leaders " + leadership_changes + " times since its creation.");
-
-        bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">").add_embed(embed));
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
+        return;
     }
-    else Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
 
-    ///////// f. /////////
-    bot.guild_member_add_role(guild_id, user_id, leader_role, [&user_id](const dpp::confirmation_callback_t &callback)
-    {
-        if (callback.is_error())
-            Logs::log("Warning: Failed to give leader role to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation claim.");
-    });
+    const dpp::embed embed = dpp::embed()
+    .set_color(dpp::colors::light_green)
+    .set_title("New Leadership")
+    .set_thumbnail(flags_url + nation_id + ".png")
+    .set_description("Stateless <@" + user_id + "> claimed the leadership of " + display_name + " and is now its new Head of State.");
+
+    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

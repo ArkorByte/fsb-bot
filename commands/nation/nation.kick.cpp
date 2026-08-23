@@ -27,7 +27,6 @@
             b. Get nation role ID and try to remove it from the user.
             c. Determine the role to remove depending on user rank, and get some required IDs from the "config" table.
             d. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the kick.
-            e. Try to remove the rank role of the user.
 
     Parameters (variable_name / type / description):
         - bot       / dpp::cluster              / Client of the bot with all related information.
@@ -66,9 +65,9 @@ void Nation::nation_kick
 
     ///////// c. /////////
     const std::string executer_nation_id = executer_nationality[0]["nation_id"];
-    Database::Output executer_nation = Database::db_query(database, "SELECT display_name, role_id FROM nations WHERE nation_id = '" + executer_nation_id + "' LIMIT 1");
+    Database::Output nations = Database::db_query(database, "SELECT display_name, role_id FROM nations WHERE nation_id = '" + executer_nation_id + "' LIMIT 1");
 
-    if (executer_nation.size() == 0)
+    if (nations.size() == 0)
     {
         Logs::log("Warning: Nation ID " + executer_nation_id + " missing in database -> /nation kick.");
         return event.reply(dpp::message(":prohibited: Something went wrong while retrieving information about nation `" + executer_nation_id + "`.").set_flags(dpp::m_ephemeral));
@@ -76,7 +75,7 @@ void Nation::nation_kick
 
     ///////// d. /////////
     Database::Output user_nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
-    const std::string display_name = executer_nation[0]["display_name"];
+    const std::string display_name = nations[0]["display_name"];
 
     if (user_nationality.size() == 0)
     {
@@ -134,7 +133,7 @@ void Nation::nation_kick
 
     ///////// b. /////////
     const dpp::snowflake guild_id = event.command.guild_id;
-    const std::string role_id = executer_nation[0]["role_id"];
+    const std::string role_id = nations[0]["role_id"];
 
     bot.guild_member_remove_role(guild_id, user_id, role_id, [&role_id, &user_id](const dpp::confirmation_callback_t &callback)
     {
@@ -143,28 +142,7 @@ void Nation::nation_kick
     });
 
     ///////// c. /////////
-    std::string role_query;
-
-    switch (user_rank)
-    {
-        case LEADER:
-            role_query = "leader_role";
-            break;
-        case PRIME_MINISTER:
-            role_query = "pm_role";
-            break;
-        case MINISTER:
-            role_query = "minister_role";
-            break;
-        case MILITARY:
-            role_query = "military_role";
-            break;
-        case CITIZEN:
-            role_query = "citizen_role";
-            break;
-    }
-
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url " + role_query + " FROM config LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -175,28 +153,22 @@ void Nation::nation_kick
     const std::string gossip_channel = config[0]["gossip_channel"];
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
-    const std::string rank_role = config[0][role_query];
 
     ///////// d. /////////
     const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
     const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
 
-    if (channel_exists && role_exists)
+    if (!channel_exists && !role_exists)
     {
-        const dpp::embed embed = dpp::embed()
-        .set_color(dpp::colors::red)
-        .set_title("Citizenship removal")
-        .set_thumbnail(flags_url + executer_nation_id + ".png")
-        .set_description(user_rank_name + " <@" + user_id + "> was kicked out of " + display_name + " by " + executer_rank_name + " <@" + executer_id + ">.");
-
-        bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">").add_embed(embed));
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
+        return;
     }
-    else Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation kick.");
 
-    ///////// e. /////////
-    bot.guild_member_remove_role(guild_id, user_id, rank_role, [&rank_role, &role_query, &user_id](const dpp::confirmation_callback_t &callback)
-    {
-        if (callback.is_error())
-            Logs::log("Warning: Failed to remove role " + rank_role + " (" + role_query + ") to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation kick.");
-    });
+    const dpp::embed embed = dpp::embed()
+    .set_color(dpp::colors::red)
+    .set_title("Citizenship Removal")
+    .set_thumbnail(flags_url + executer_nation_id + ".png")
+    .set_description(user_rank_name + " <@" + user_id + "> was kicked out of " + display_name + " by " + executer_rank_name + " <@" + executer_id + ">.");
+
+    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

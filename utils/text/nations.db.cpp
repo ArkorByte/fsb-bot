@@ -1,4 +1,4 @@
-#include "utils.text.hpp"
+#include "text.hpp"
 
 #include <string>
 #include <vector>
@@ -131,7 +131,7 @@ std::string Text::get_rank
 {
     const std::vector<std::string> ranks
     {
-        "Citizen", "Military", "Minister", "Prime Minister", "Head of State"
+        "Citizen", "Soldier", "Minister", "Prime Minister", "Head of State"
     };
 
     return ranks[index];

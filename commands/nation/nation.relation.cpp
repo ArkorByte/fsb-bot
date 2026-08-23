@@ -4,7 +4,6 @@
 #include "../../utils/utils.hpp"
 
 #include <algorithm>
-#include <cstdint>
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
 #include <string>
