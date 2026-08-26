@@ -115,14 +115,14 @@ void Nation::nation_kick
     ///////// g. /////////
     if (user_rank == executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not kick <@" + user_id + "> out of " + display_name + " as you both have the " + user_rank_name + " rank.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + user_id + "> out of " + display_name + " as you share the same rank.").set_flags(dpp::m_ephemeral));
         return;
     }
 
     ///////// h. /////////
     if (user_rank > executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not kick <@" + user_id + "> out of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + user_id + "> out of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
         return;
     }
 

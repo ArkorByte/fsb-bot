@@ -21,9 +21,9 @@
             d. Try to retrieve some information about the executer nation.
             e. Verify that the targeted user is not stateless.
             f. Verify that both the executer and user are part of the same nation.
-            g. Verify that the executer is not trying to give a rank that is higher than theirs.
+            g. Verify that the user does not already have the rank to give.
             h. Verify that the executer is not trying to give their own rank (except if they are the Head of State and trying to transfert leadership).
-            i. Verify that the user does not already have the rank to give.
+            i. Verify that the executer is not trying to give a rank that is higher than theirs.
             j. Verify that the executer and user ranks do not match.
             k. Verify that the executer rank is higher than the user rank.
         2) Process the rank modification request.
@@ -117,24 +117,8 @@ void Nation::nation_rank
     }
 
     ///////// g. /////////
-    const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
-    const std::string executer_rank_name = Text::get_rank(executer_rank);
-
-    if (new_rank > executer_rank)
-    {
-        event.reply(dpp::message(":prohibited: You can not set the rank of <@" + user_id + "> to " + rank_name + " of " + display_name + " as the new rank is higher than yours (" + rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
-        return;
-    }
-
-    ///////// h. /////////
-    if (new_rank == executer_rank && new_rank != LEADER)
-    {
-        event.reply(dpp::message(":prohibited: You can not set the rank of <@" + user_id + "> to " + rank_name + " of " + display_name + " as the new rank is your current rank.").set_flags(dpp::m_ephemeral));
-        return;
-    }
-
-    ///////// i. /////////
     const int user_rank = std::stoi(user_nationality[0]["rank"]);
+    const std::string user_rank_name = Text::get_rank(user_rank);
 
     if (user_rank == new_rank)
     {
@@ -142,19 +126,35 @@ void Nation::nation_rank
         return;
     }
 
+    ///////// h. /////////
+    const int executer_rank = std::stoi(executer_nationality[0]["rank"]);
+
+    if (new_rank == executer_rank && new_rank != LEADER)
+    {
+        event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name + " <@" + user_id + "> to " + rank_name + " of " + display_name + " as the new rank is your current rank.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    ///////// i. /////////
+    if (new_rank > executer_rank)
+    {
+        event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name + " <@" + user_id + "> to " + rank_name + " of " + display_name + " as the new rank is higher than yours (" + rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
     ///////// j. /////////
+    const std::string executer_rank_name = Text::get_rank(executer_rank);
+
     if (user_rank == executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not set the rank of <@" + user_id + "> to " + rank_name + " of " + display_name + " as you both have the " + executer_rank_name + ".").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name + " <@" + user_id + "> to " + rank_name + " of " + display_name + " as you both have the " + executer_rank_name + ".").set_flags(dpp::m_ephemeral));
         return;
     }
 
     ///////// k. /////////
-    const std::string user_rank_name = Text::get_rank(user_rank);
-
     if (user_rank > executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not set the rank of <@" + user_id + "> to " + rank_name + " of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name +  " <@" + user_id + "> to " + rank_name + " of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
         return;
     }
 
