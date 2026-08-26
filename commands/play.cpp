@@ -1,17 +1,18 @@
 #include "commands.hpp"
 
 #include <dpp/dpp.h>
+#include <string>
 
 /*
-    Gives some information about how to play to MineWorld.
+    Explains how to play to MineWorld.
 
     Tasks:
         1) Reply to the interaction.
 
-    Parameters:
-        - event / dpp::interaction_create_t / Event information.
+    Parameters (variable_name / type / description):
+        - event     / dpp::interaction_create_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Commands::play
@@ -24,9 +25,9 @@ void Commands::play
         dpp::message
         (
             std::string("### How to play to Mineworld\n") +
-            "- Get a Minecraft Java launcher (26.1.2 or higher).\n" +
-            "- Join the server at the address `51.75.140.147`.\n" +
-            "- Web interactive map of the world at `http://51.75.140.147:8100`."
+            "- Create a new Forge instance version `47.4.22` for Minecraft `1.20.1`.\n" +
+            "- Download the mod pack from `http://51.75.140.147/downloads/default-pack.zip`." +
+            "- Join the server at the address `51.75.140.147`."
         ).set_flags(dpp::m_ephemeral)
     );
 }
