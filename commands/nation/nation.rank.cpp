@@ -72,7 +72,7 @@ void Nation::nation_rank
 
     if (executer_nationality.size() == 0)
     {
-        event.reply(dpp::message(":warning: You can not perform this action while being stateless.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not perform this action while being stateless.").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -215,7 +215,7 @@ void Nation::nation_rank
 
     if (!channel_exists && !role_exists)
     {
-        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation rank.");
         return;
     }
 

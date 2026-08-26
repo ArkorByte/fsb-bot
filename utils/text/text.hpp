@@ -48,6 +48,11 @@ namespace Text
         const int &score
     );
 
+    std::string get_relation_rating
+    (
+        const int &score
+    );
+
     ////////////////////
     ///// trim.cpp /////
     ////////////////////

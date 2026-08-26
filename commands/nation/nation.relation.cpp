@@ -1,7 +1,8 @@
 #include "nation.hpp"
 
 #include "../../config/enumerations.hpp"
-#include "../../utils/utils.hpp"
+#include "../../utils/database/database.hpp"
+#include "../../utils/text/text.hpp"
 
 #include <algorithm>
 #include <dpp/dpp.h>
@@ -12,16 +13,24 @@
     Set a relation score with another nation.
 
     Tasks:
-        1) Verify nation ID.
-        2) Verify user nationality and rank.
-        3) Update/Insert relation score in database.
+        1) We do some verifications first.
+            a. Sanitize the nation ID input and verify that the targeted nation exists.
+            b. Verify that user is not stateless.
+            c. Try to get some information about user nation.
+            d. Verify user rank.
+        2) We process the relation modification request.
+            a. Get current relation score defined by user nation towards targeted nation. Default score is 50 (Neutrality) if none was ever defined.
+            b. Get current relation score defined by targeted nation towards user nation.
+            c. Update user nation definition of its relation with the targeted nation in the database.
+            d. Try to retrieve some configuration from the database.
+            e. Send a message in the gossip channel pinging the gossip role if possible, announcing the relation score modification.
 
-    Parameters:
-        - bot       / dpp::cluster              / FSB client data.
-        - database  / MYSQL*                    / FSB + MineWorld database.
-        - event     / dpp::interaction_create_t / Event information.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster              / Client of the bot with all related information.
+        - database  / MYSQL*                    / Database used for the FSB bot and the MineWorld server.
+        - event     / dpp::interaction_create_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Nation::nation_relation
@@ -31,41 +40,118 @@ void Nation::nation_relation
     const dpp::interaction_create_t &event
 )
 {
-    std::string nation_id = std::get<std::string>(event.get_parameter("nation_id"));
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
+    std::string target_id = std::get<std::string>(event.get_parameter("nation_id"));
     const int64_t score = std::clamp(std::get<int64_t>(event.get_parameter("score")), 0L, 100L);
 
-    nation_id = Utils::Database::sanitize_input(database, nation_id);
-    Utils::Database::QueryData nations = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    target_id = Database::sanitize_input(database, target_id);
+    Database::Output target = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + target_id + "' LIMIT 1");
+
+    if (target.size() == 0)
+    {
+        event.reply(dpp::message(":prohibited: Nation `" + target_id + "` does not exist.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    ///////// b. /////////
+    const std::string user_id = std::to_string(event.command.usr.id);
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+
+    if (nationality.size() == 0)
+    {
+        event.reply(dpp::message(":prohibited: You can not perform this action while being stateless.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    ///////// c. /////////
+    const std::string nation_id = nationality[0]["nation_id"];
+    Database::Output nations = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nations.size() == 0)
     {
-        event.reply(dpp::message(":warning: This nation does not exist.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: Nation `" + nation_id + "` does not exist.").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Utils::Database::QueryData user_nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    ///////// d. /////////
+    const int rank = std::stoi(nationality[0]["rank"]);
+    const std::string display_name = nations[0]["display_name"];
+    const std::string target_name = target[0]["display_name"];
 
-    if (user_nationality.size() == 0)
+    if (rank < MINISTER)
     {
-        event.reply(dpp::message(":warning: You can not do this action as stateless.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You must be a government official of " + display_name + " to update the relation score with " + target_name + ".").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    const int rank = std::stoi(user_nationality[0]["rank"]);
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
+    int nation_relation = 50;
+    Database::Output nation_query = Database::db_query(database, "SELECT score FROM relations WHERE defining_nation = '" + nation_id + "' AND targeted_nation = '" + target_id + "' LIMIT 1");
 
-    if (rank == CITIZEN || rank == MILITARY)
+    if (nation_query.size() != 0)
+        nation_relation = std::stoi(nation_query[0]["score"]);
+
+    ///////// b. /////////
+    int target_relation = 50;
+    Database::Output target_query = Database::db_query(database, "SELECT score FROM relations WHERE defining_nation = '" + target_id + "' AND targeted_nation = '" + nation_id + "' LIMIT 1");
+
+    if (target_query.size() != 0)
+        target_relation = std::stoi(target_query[0]["score"]);
+
+    ///////// c. /////////
+    const int current_relation = (nation_relation + target_relation) / 2;
+    const std::string current_rating = Text::get_relation_rating(relation);
+
+    const int new_relation = (score + target_relation) / 2;
+    const std::string new_rating = Text::get_relation_rating(new_relation);
+
+    const bool increased = (new_relation > current_relation);
+    const std::string emoji = (increased ? ":arrow_up:" : ":arrow_down:");
+    const std::string verb = (increased ? "improved" : "degraded");
+
+    const std::string nation_flag = Text::get_nation_flag(nation_id);
+    const std::string target_flag = Text::get_nation_flag(target_id);
+
+    if (nation_query.size() == 0)
+        Database::db_query(database, "INSERT INTO relations (defining_nation, targeted_nation, score) VALUES ('" + nation_id + "', '" + target_id + "', '" + std::to_string(score) + "')");
+    else Database::db_query(database, "UPDATE relations SET score = '" + std::to_string(score) + "' WHERE defining_nation = '" + nation_id + "' AND targeted_nation = '" + target_id + "'");
+
+    event.reply(dpp::message(emoji + " The relation between " + display_name + " and " + target_name + " has " + verb + " from " + current_rating + " (" + std::to_string(current_relation) + "% - " + nation_flag + " " + std::to_string(nation_relation) + "%, " + target_flag + " " + std::to_string(target_relation) + "%) to " + new_rating + " (" + std::to_string(new_relation) + "% - " + nation_flag + " " + std::to_string(score) + "%, " + target_flag + " " + std::to_string(target_relation) + "%).").set_flags(dpp::m_ephemeral));
+
+    ///////// d. /////////
+    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");
+
+    if (config.size() == 0)
     {
-        event.reply(dpp::message(":warning: You must be a government official to do this action.").set_flags(dpp::m_ephemeral));
+        Logs::log("Warning: No config data -> /nation relation.");
         return;
     }
 
-    const std::string user_nation_id = user_nationality[0]["nation_id"];
-    Utils::Database::QueryData current_relationship = Utils::Database::db_query(database, "SELECT * FROM relations WHERE defining_nation = '" + user_nation_id + "' AND targeted_nation = '" + nation_id + "' LIMIT 1");
+    const std::string gossip_channel = config[0]["gossip_channel"];
+    const std::string gossip_role = config[0]["gossip_role"];
+    const std::string flags_url = config[0]["flags_url"];
 
-    if (current_relationship.size() == 0)
-        Utils::Database::db_query(database, "INSERT INTO relations (defining_nation, targeted_nation, score) VALUES ('" + user_nation_id + "', '" + nation_id + "', '" + std::to_string(score) + "')");
-    else Utils::Database::db_query(database, "UPDATE relations SET score = '" + std::to_string(score) + "' WHERE defining_nation = '" + user_nation_id + "' AND targeted_nation = '" + nation_id + "'");
+    ///////// e. /////////
+    const dpp::snowflake guild_id = event.command.guild_id;
 
-    event.reply(dpp::message(":white_check_mark: Relation succesfully set to " + std::to_string(score) + "%.").set_flags(dpp::m_ephemeral));
+    const bool channel_exists = (dpp::find_channel(gossip_channel) -> guild_id == guild_id);
+    const bool role_exists = (dpp::find_role(gossip_role) -> guild_id == guild_id);
+
+    if (!channel_exists && !role_exists)
+    {
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation relation.");
+        return;
+    }
+
+    const uint32_t color = (increased ? dpp::colors::light_green : dpp::colors::red);
+
+    const dpp::embed embed = dpp::embed()
+    .set_color(color)
+    .set_title("Relation Updated")
+    .set_thumbnail(flags_url + nation_id + ".png")
+    .set_description("The relation between " + display_name + " and " + target_name + " has " + verb + " from " + current_rating + " (" + std::to_string(current_relation) + "%) to " + new_rating + " (" + std::to_string(new_relation) + "%)!");
+
+    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

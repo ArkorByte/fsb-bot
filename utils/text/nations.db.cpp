@@ -167,3 +167,38 @@ std::string Text::get_media_freedom_rating
         return "Good";
     else return "Very good";
 }
+
+
+
+/*
+    Get relation rating between two nations from score.
+
+    Tasks:
+        1) Check score value.
+        2) Return rating.
+
+    Parameters:
+        - score / int / Nations relation score.
+
+    Returns:
+        A string containing the relation rating.
+*/
+std::string Text::get_relation_rating
+(
+    const int &score
+)
+{
+    if (score <= 10)
+        return "Hostility";
+    else if (score <= 20)
+        return "Hatred";
+    else if (score <= 40)
+        return "Tensions";
+    else if (score <= 60)
+        return "Neutrality";
+    else if (score <= 80)
+        return "Cordiality";
+    else if (score <= 90)
+        return "Friendship";
+    else return "Harmony";
+}

@@ -160,7 +160,7 @@ void Nation::nation_kick
 
     if (!channel_exists && !role_exists)
     {
-        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation claim.");
+        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation kick.");
         return;
     }
 
