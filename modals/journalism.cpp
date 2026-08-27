@@ -1,6 +1,7 @@
 #include "modals.hpp"
 
-#include "../utils/utils.hpp"
+#include "../utils/database/database.hpp"
+#include "../utils/miscellaneous/miscellaneous.hpp"
 
 #include <algorithm>
 #include <dpp/dpp.h>
@@ -8,24 +9,27 @@
 #include <string>
 
 /*
-    Display a post in journalism
+    Make a post in the journalism channel.
 
     Tasks:
-        1) Get modal fields data.
-        2) Get user nationality.
-        3) Get nation information.
-        4) Get whitelist status and related stats.
-        5) If whitelist is enabled and user not in it, we automatically censor and update stats.
-        6) Get blacklist status.
-        7) If blacklist enabled and user in it, we automatically censor and update stats / media freedom rating.
-        8) Otherwise, we update media freedom depending on whitelist status and display the post in journalism channel.
+        1) Get the modal field values.
+        2) We do some verifications process.
+            a. Verify that the user is not stateless.
+            b. Try to get some information and stats about the nation.
+            c. Try to get the current authorization of the user in case the whitelist or the blacklist is enable.
+            d. If the whitelist is enabled, verify that the user is part of it.
+            e. If the blacklist is enabled, verify that the user is not part of it.
+        3) Handle the post request.
+            a. Update nation stats in the database.
+            b. Format the message and the components.
+            c. Try to publish the post in the journalism channel.
 
-    Parameters:
-        - bot      / dpp::cluster       / FSB client data.
-        - database / MYSQL*             / FSB + MineWorld database.
-        - event    / dpp::form_submit_t / Event information.
+    Parameters (variable_name / type / description):
+        - bot      / dpp::cluster       / Client of the bot with all related information.
+        - database / MYSQL*             / Database used for the FSB bot and the MineWorld server.
+        - event    / dpp::form_submit_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Modals::journalism
@@ -35,68 +39,72 @@ void Modals::journalism
     const dpp::form_submit_t &event
 )
 {
+    ////////////////// 1) //////////////////
     const std::string article_title = std::get<std::string>(event.components[0].value);
     const std::string article_content = std::get<std::string>(event.components[1].value);
     const std::string top_image_url = std::get<std::string>(event.components[2].value);
     const std::string bottom_image_url = std::get<std::string>(event.components[3].value);
 
-    const dpp::snowflake user_id = event.command.usr.id;
-    Utils::Database::QueryData nationality = Utils::Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
+    const std::string user_id = std::to_string(event.command.usr.id);
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
-        event.reply(dpp::message(":warning: You can not post anything as stateless. Join a nation first.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not perform this action being stateless.").set_flags(dpp::m_ephemeral));
         return;
     }
 
+    ///////// b. ////////
     const std::string nation_id = nationality[0]["nation_id"];
-    Utils::Database::QueryData nation = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    Database::Output nations = Database::db_query(database, "SELECT display_name, media_blacklist, media_whitelist, media_posts, censored_posts, media_freedom FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
-    if (nation.size() == 0)
+    if (nations.size() == 0)
     {
-        event.reply(dpp::message(":warning: Something went **wrong**!").set_flags(dpp::m_ephemeral));
-        Utils::Logs::log("FIX NEEDED: Nation ID " + nation_id + " missing in database.");
+        event.reply(dpp::message(":prohibited: Nation `" + nation_id + "` does not exist.").set_flags(dpp::m_ephemeral));
         return;
     }
 
-    const std::string whitelist = nation[0]["media_whitelist"];
-    const int64_t media_posts = std::stoll(nation[0]["media_posts"]) + 1;
-    const int64_t timestamp = Utils::Miscellaneous::get_current_timestamp();
-
-    Utils::Database::QueryData journalism_status = Utils::Database::db_query(database, "SELECT * FROM journalism WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
+    ///////// c. /////////
+    Database::Output journalism = Database::db_query(database, "SELECT status FROM journalism WHERE user_id = '" + user_id + "' LIMIT 1");
     int user_status = -1;
 
-    if (journalism_status.size() != 0)
-        user_status = std::stoi(journalism_status[0]["status"]);
+    if (journalism.size() != 0)
+        user_status = std::stoi(journalism[0]["status"]);
+
+    ///////// d. /////////
+    const std::string whitelist = nations[0]["media_whitelist"];
+    const std::string media_posts = std::to_string(std::stoll(nations[0]["media_posts"]) + 1);
+    const std::string now = std::to_string(Miscellaneous::get_current_timestamp());
+    const std::string censored_posts = std::to_string(std::stoll(nations[0]["censored_posts"]) + 1);
+    const std::string display_name = nations[0]["display_name"];
 
     if (whitelist == "1" && user_status != 0)
     {
-        event.reply(dpp::message(":warning: Your post has been **automatically censored** by your government due to the **highest censorship** measures in place!").set_flags(dpp::m_ephemeral));
-        const int64_t censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
-
-        Utils::Database::db_query(database, "UPDATE nations SET media_posts = '" + std::to_string(media_posts) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_a_censorship = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
-        return;
+        Database::db_query(database, "UPDATE nations SET media_posts = '" + media_posts + "', censored_posts = '" + censored_posts + "', last_a_censorship = '" + now + "' WHERE nation_id = '" + nation_id + "'");
+        return event.reply(dpp::message(":prohibited: Your post has been **automatically censored** by the government of " + display_name + ".").set_flags(dpp::m_ephemeral));;
     }
 
-    const std::string blacklist = nation[0]["media_blacklist"];
+    ///////// e. /////////
+    const std::string blacklist = nations[0]["media_blacklist"];
+    const int media_freedom = std::clamp(std::stoi(nation[0]["media_freedom"]) - 1, 0, 100);
 
     if (blacklist == "1" && user_status == 1)
     {
-        event.reply(dpp::message(":warning: Your post has been **automatically censored** by your government due to **censorship restrictions** against you!").set_flags(dpp::m_ephemeral));
-
-        const int64_t media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) - 1, 0LL, 100LL);
-        const int64_t censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
-
-        Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + std::to_string(media_posts) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_a_censorship = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
-        return;
+        Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + media_posts + "', censored_posts = '" + censored_posts + "', last_a_censorship = '" + now + "' WHERE nation_id = '" + nation_id + "'");
+        return event.reply(dpp::message(":prohibited: Your post has been **automatically censored** by the government of " + display_name + ".").set_flags(dpp::m_ephemeral));;
     }
 
-    const int change = whitelist == "1" ? 0 : 1;
+    ////////////////// 3) //////////////////
+    ///////// a. /////////
+    const int change = (whitelist == "1" ? 0 : 1);
     const int64_t media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) + change, 0LL, 100LL);
-    const std::string nation_name = nation[0]["display_name"];
-    const std::string flag = Utils::Text::get_nation_flag(nation_id);
 
-    Utils::Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + std::to_string(media_posts) + "', last_post = '" + std::to_string(timestamp) + "' WHERE nation_id = '" + nation_id + "'");
+    Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', media_posts = '" + media_posts + "', last_post = '" + now + "' WHERE nation_id = '" + nation_id + "'");
+
+    ///////// b. /////////
+    const std::string flag = Utils::Text::get_nation_flag(nation_id);
 
     const dpp::embed embed = dpp::embed()
     .set_color(dpp::colors::cream_white)
@@ -124,19 +132,19 @@ void Modals::journalism
         .set_id("journalism_blacklist")
     );
 
+    ///////// c. /////////
+    Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT journalism_channel FROM config LIMIT 1");
+
+    const dpp::snowflake journalism_channel = std::stoll(config[0]["journalism_channel"]);
     const dpp::snowflake guild_id = event.command.guild_id;
+    const bool channel_exists = (dpp::find_channel(journalism_channel) -> guild_id == guild_id);
 
-    Utils::Database::QueryData config = Utils::Database::db_query(database, "SELECT * FROM config WHERE guild_id = '" + std::to_string(guild_id) + "' LIMIT 1");
-    const int64_t journalism_channel = std::stoll(config[0]["journalism_channel"]);
-
-    if (dpp::find_channel(journalism_channel) -> guild_id == guild_id)
+    if (!channel_exists)
     {
-        bot.message_create(dpp::message(journalism_channel, "||" + std::to_string(user_id) + "." + nation_id + "||").add_embed(embed).add_component(buttons));
-        event.reply(dpp::message(":white_check_mark: Your post has been punished!").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: No channel `" + std::to_string(journalism_channel) + "` found in this guild.").set_flags(dpp::m_ephemeral));
+        return;
     }
-    else
-    {
-        Utils::Logs::log("FIX NEEDED, journalism_channel ID is not valid!");
-        event.reply(dpp::message(":warning: Something went wrong finding the journalism channel!").set_flags(dpp::m_ephemeral));
-    };
+
+    bot.message_create(dpp::message(journalism_channel, "||" + std::to_string(user_id) + "." + nation_id + "||").add_embed(embed).add_component(buttons));
+    event.reply(dpp::message(":newspaper: Your post has been published from " + display_name + " in <#" + std::to_string(journalism_channel) + ">.").set_flags(dpp::m_ephemeral));
 }
