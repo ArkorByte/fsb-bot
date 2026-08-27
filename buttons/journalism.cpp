@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <dpp/dpp.h>
+#include <dpp/message.h>
 #include <mysql/mysql.h>
 #include <string>
 
@@ -100,11 +101,11 @@ void Buttons::journalism_censor
         if (post_nation.size() == 0)
         {
             Logs::log("Warning: Nation ID " + post_nation_id + " missing in database -> journalism_censor button.");
-            return event.reply(dpp::message(":prohibited: You can not censor a post published from another country being " + rank_name + " of " + display_name + ".";
+            return event.reply(dpp::message(":prohibited: You can not censor a post published from another country being " + rank_name + " of " + display_name + ".").set_flags(dpp::m_ephemeral));
         }
 
         const std::string post_nation_name = post_nation[0]["display_name"];
-        return event.reply(dpp::message(":prohibited: You can not censor a post published from " + post_nation_name + " being " + rank_name + " of " + display_name + ".";
+        return event.reply(dpp::message(":prohibited: You can not censor a post published from " + post_nation_name + " being " + rank_name + " of " + display_name + ".").set_flags(dpp::m_ephemeral));
     }
 
     ///////// f. /////////
@@ -148,8 +149,8 @@ void Buttons::journalism_censor
 
     ///////// c. /////////
     const int score_hit = (ID == "journalism_blacklist" ? 8 : 3);
-    const int media_freedom = std::clamp(std::stoll(nation[0]["media_freedom"]) - score_hit, 0LL, 100LL);
-    const int censored_posts = std::stoll(nation[0]["censored_posts"]) + 1;
+    const int media_freedom = std::clamp(std::stoll(nations[0]["media_freedom"]) - score_hit, 0LL, 100LL);
+    const int censored_posts = std::stoll(nations[0]["censored_posts"]) + 1;
     const std::string timestamp = std::to_string(Miscellaneous::get_current_timestamp());
 
     Database::db_query(database, "UPDATE nations SET media_freedom = '" + std::to_string(media_freedom) + "', censored_posts = '" + std::to_string(censored_posts) + "', last_manual_censorship = '" + timestamp + "' WHERE nation_id = '" + nation_id + "'");
@@ -159,7 +160,7 @@ void Buttons::journalism_censor
     {
         Database::Output registered = Database::db_query(database, "SELECT 1 FROM journalism WHERE user_id = '" + user_id + "' LIMIT 1");
 
-        if (user_registered.size() == 0)
+        if (registered.size() == 0)
             Database::db_query(database, "INSERT INTO journalism (user_id, status) VALUES ('" + user_id + "', 1)");
         else Database::db_query(database, "UPDATE journalism SET status = 1 WHERE user_id = '" + user_id + "'");
 

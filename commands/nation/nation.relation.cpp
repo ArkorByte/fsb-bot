@@ -2,6 +2,7 @@
 
 #include "../../config/enumerations.hpp"
 #include "../../utils/database/database.hpp"
+#include "../../utils/logs/logs.hpp"
 #include "../../utils/text/text.hpp"
 
 #include <algorithm>
@@ -102,7 +103,7 @@ void Nation::nation_relation
 
     ///////// c. /////////
     const int current_relation = (nation_relation + target_relation) / 2;
-    const std::string current_rating = Text::get_relation_rating(relation);
+    const std::string current_rating = Text::get_relation_rating(current_relation);
 
     const int new_relation = (score + target_relation) / 2;
     const std::string new_rating = Text::get_relation_rating(new_relation);

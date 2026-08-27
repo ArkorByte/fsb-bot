@@ -136,6 +136,8 @@ void Nation::nation_rank
     }
 
     ///////// i. /////////
+    const std::string executer_rank_name = Text::get_rank(executer_rank);
+
     if (new_rank > executer_rank)
     {
         event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name + " <@" + user_id + "> to " + rank_name + " of " + display_name + " as the new rank is higher than yours (" + rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
@@ -143,8 +145,6 @@ void Nation::nation_rank
     }
 
     ///////// j. /////////
-    const std::string executer_rank_name = Text::get_rank(executer_rank);
-
     if (user_rank == executer_rank)
     {
         event.reply(dpp::message(":prohibited: You can not set the rank of " + user_rank_name + " <@" + user_id + "> to " + rank_name + " of " + display_name + " as you both have the " + executer_rank_name + ".").set_flags(dpp::m_ephemeral));

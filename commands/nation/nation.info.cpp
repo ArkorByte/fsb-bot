@@ -1,7 +1,6 @@
 #include "nation.hpp"
 
 #include "../../config/enumerations.hpp"
-#include "../../utils/utils.hpp"
 
 #include <dpp/dpp.h>
 #include <map>
@@ -31,7 +30,7 @@ void Nation::nation_info
     const dpp::interaction_create_t &event
 )
 {
-    std::string nation_id = std::get<std::string>(event.get_parameter("nation_id"));
+    /*std::string nation_id = std::get<std::string>(event.get_parameter("nation_id"));
 
     nation_id = Utils::Database::sanitize_input(database, nation_id);
     Utils::Database::QueryData nations = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
@@ -75,5 +74,5 @@ void Nation::nation_info
         .add_select_option(dpp::select_option("Warfare", "warfare", "Display military information of the nation.").set_emoji(u8"🪖"))
     );
 
-    event.reply(dpp::message().add_embed(embed).add_component(select_menu));
+    event.reply(dpp::message().add_embed(embed).add_component(select_menu));*/
 }
