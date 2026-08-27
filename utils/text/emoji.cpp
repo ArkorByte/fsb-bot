@@ -1,4 +1,4 @@
-#include "utils.text.hpp"
+#include "text.hpp"
 
 #include <map>
 #include <string>
@@ -7,20 +7,21 @@
     Get the national flag of a state.
 
     Tasks:
-        1) Declare all flags.
-        2) Return the flag depending on provided nation ID.
+        1) Declare all flags of all available nations.
+        2) Try to get a flag using the nation ID provided.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - nation_id / string / ID of the nation.
 
-    Returns:
-        A string containing the flag.
+    Returns (type + description):
+        A string containing the flag emoji.
 */
 std::string Text::get_nation_flag
 (
     const std::string &nation_id
 )
 {
+    ////////////////// 1) //////////////////
     std::map<std::string, std::string> flags
     {
         { "afghanistan", "🇦🇫" },              { "albania", "🇦🇱" },                          { "algeria", "🇩🇿" },           { "andorra", "🇦🇩" },
@@ -74,5 +75,7 @@ std::string Text::get_nation_flag
         { "zambia", "🇿🇲" },                   { "zimbabwe", "🇿🇼" },                         { "angola", "🇦🇴" }
     };
 
+    ////////////////// 2) //////////////////
+    const std::string flag = flags[nation_id];
     return flags[nation_id];
 }

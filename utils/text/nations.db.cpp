@@ -7,13 +7,13 @@
     Get full government type name.
 
     Tasks:
-        1) Declare all government types.
-        2) Return one depending on index.
+        1) Declare all government types available.
+        2) Try to get a government type using the index provided.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - index / int / Government type from database.
 
-    Returns:
+    Returns (type + description):
         A string containing the government type name.
 */
 std::string Text::get_government_type
@@ -21,6 +21,7 @@ std::string Text::get_government_type
     const int &index
 )
 {
+    ////////////////// 1) //////////////////
     const std::vector<std::string> governments
     {
         "Presidential Republic",  "Parlimentary Republic",  "Federal Republic", "Monarchy",
@@ -28,7 +29,9 @@ std::string Text::get_government_type
         "Oligarchy",              "Aristocracy",            "One-Party State"
     };
 
-    return governments[index];
+    ////////////////// 2) //////////////////
+    const std::string type = governments[index];
+    return type;
 }
 
 
@@ -37,13 +40,13 @@ std::string Text::get_government_type
     Get full ideology name.
 
     Tasks:
-        1) Declare all ideologies.
-        2) Return one depending on index.
+        1) Declare all ideologies available.
+        2) Try to get an ideology using the index provided.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - index / int / Ideology from database.
 
-    Returns:
+    Returns (type + description):
         A string containing the ideology name.
 */
 std::string Text::get_ideology
@@ -51,13 +54,16 @@ std::string Text::get_ideology
     const int &index
 )
 {
+    ////////////////// 1) //////////////////
     const std::vector<std::string> ideologies
     {
         "Liberalism", "Conservatism", "Socialism",   "Communism", "Nationalism",
         "Centrism",   "Militarism",   "Imperialism", "Pacifism",  "Neutralism"
     };
 
-    return ideologies[index];
+    ////////////////// 2) //////////////////
+    const std::string ideology = ideologies[index];
+    return ideology;
 }
 
 
@@ -65,13 +71,13 @@ std::string Text::get_ideology
     Get full join condition name.
 
     Tasks:
-        1) Declare all join conditions.
-        2) Return one depending on index.
+        1) Declare all join conditions available.
+        2) Try to get a value depending on the index provided.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - index / int / Join condition from database.
 
-    Returns:
+    Returns (type + description):
         A string containing the join condition name.
 */
 std::string Text::get_join_condition
@@ -79,9 +85,12 @@ std::string Text::get_join_condition
     const int &index
 )
 {
+    ////////////////// 1) //////////////////
     const std::vector<std::string> condition_values { "Opened", "On Invitation", "Closed" };
 
-    return condition_values[index];
+    ////////////////// 2) //////////////////
+    const std::string output = condition_values[index];
+    return output;
 }
 
 
@@ -90,13 +99,13 @@ std::string Text::get_join_condition
     Get full invite permission name.
 
     Tasks:
-        1) Declare all invite permissions.
-        2) Return one depending on index.
+        1) Declare all invite permissions available.
+        2) Try to get a value depending on the index provided.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - index / int / Invite permission from database.
 
-    Returns:
+    Returns (type + description):
         A string containing the invite permission name.
 */
 std::string Text::get_invite_permission
@@ -104,9 +113,15 @@ std::string Text::get_invite_permission
     const int &index
 )
 {
-    const std::vector<std::string> invite_permissions { "Everyone", "Government Only", "Prime Minister+", "Head of State Only" };
+    ////////////////// 1) //////////////////
+    const std::vector<std::string> invite_permissions
+    {
+        "Everyone", "Government Only", "Prime Minister+", "Head of State Only"
+    };
 
-    return invite_permissions[index];
+    ////////////////// 2) //////////////////
+    const std::string permission = invite_permissions[index];
+    return permission;
 }
 
 
@@ -115,13 +130,13 @@ std::string Text::get_invite_permission
     Get full rank name.
 
     Tasks:
-        1) Declare all ranks.
-        2) Return one depending on index.
+        1) Declare all ranks available.
+        2) Try to get a rank depending on the index provided.
 
-    Parameters:
-        - index / int / Rank from database/enum.
+    Parameters (variable_name / type / description):
+        - index / int / Rank index from database.
 
-    Returns:
+    Returns (type + description):
         A string containing the rank name.
 */
 std::string Text::get_rank
@@ -129,27 +144,29 @@ std::string Text::get_rank
     const int &index
 )
 {
+    ////////////////// 1) //////////////////
     const std::vector<std::string> ranks
     {
         "Citizen", "Soldier", "Minister", "Prime Minister", "Head of State"
     };
 
-    return ranks[index];
+    ////////////////// 2) //////////////////
+    const std::string rank = ranks[index];
+    return rank;
 }
 
 
 
 /*
-    Get media freedom rating from score.
+    Get a media freedom rating from the score.
 
     Tasks:
-        1) Check score value.
-        2) Return rating.
+        1) Check the score value and return a rating depending on it.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - score / int / Media freedom score.
 
-    Returns:
+    Returns (type + description):
         A string containing the media freedom rating.
 */
 std::string Text::get_media_freedom_rating
@@ -171,16 +188,15 @@ std::string Text::get_media_freedom_rating
 
 
 /*
-    Get relation rating between two nations from score.
+    Get a relation rating between two nations from the score.
 
     Tasks:
-        1) Check score value.
-        2) Return rating.
+        1) Check the score value and return a rating depending on it.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - score / int / Nations relation score.
 
-    Returns:
+    Returns (type + description):
         A string containing the relation rating.
 */
 std::string Text::get_relation_rating

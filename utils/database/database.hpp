@@ -20,7 +20,7 @@ namespace Database
 
     void connect_database
     (
-        MYSQL*            &database_obj,
+        MYSQL*            &database,
         const std::string &database_name,
         const std::string &host,
         const int         &port,
@@ -66,7 +66,7 @@ namespace Database
         public:
             database_handler
             (
-                MYSQL*            &database_obj,
+                MYSQL*            &database,
                 const std::string &database_name,
                 const std::string &host,
                 const int         &port,

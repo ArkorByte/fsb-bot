@@ -1,6 +1,6 @@
-#include "utils.database.hpp"
+#include "database.hpp"
 
-#include "../logs/utils.logs.hpp"
+#include "../logs/logs.hpp"
 
 #include <mysql/mysql.h>
 #include <string>
@@ -10,27 +10,26 @@
 ///////////////////////////////////////////////////
 
 /*
-    Connect to the database.
+    Connect to a database.
 
     Tasks:
         1) Try to initialize MySQL.
         2) Try to connect to the database with the credentials provided.
-        3) Verify connection.
 
-    Parameters:
-        - database_obj  / MYSQL* / Object that points to the database once connected.
-        - database_name / string / Name of the database we want to use.
-        - host          / string / IP address or domain name pointing to the database we want to use.
-        - port          / int    / Port of the database we want to use.
-        - user          / string / User we are going to use to connect to the database.
-        - password      / string / Password of this user.
+    Parameters (variable_name / type / description):
+        - database      / MYSQL* / Object that will point to the database once connected.
+        - database_name / string / Name of the database to use.
+        - host          / string / IP address or domain name of the database.
+        - port          / int    / Port of the database.
+        - user          / string / User to use in order to connect to the database.
+        - password      / string / Password of the user.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Database::connect_database
 (
-    MYSQL*            &database_obj,
+    MYSQL*            &database,
     const std::string &database_name,
     const std::string &host,
     const int         &port,
@@ -38,26 +37,28 @@ void Database::connect_database
     const std::string &password
 )
 {
+    ////////////////// 1) //////////////////
     Logs::log("Connecting to the database..");
-    database_obj = mysql_init(nullptr);
+    database = mysql_init(nullptr);
 
-    if (database_obj == nullptr)
+    if (database == nullptr)
         Logs::crash_log("Failed to initialize mysql for database connection!");
 
     const bool reconnect = true;
-    mysql_options(database_obj, MYSQL_OPT_RECONNECT, &reconnect);
+    mysql_options(database, MYSQL_OPT_RECONNECT, &reconnect);
 
-    const MYSQL* connection = mysql_real_connect(database_obj, host.c_str(), user.c_str(), password.c_str(), database_name.c_str(), port, nullptr, 0);
+    ////////////////// 2) //////////////////
+    const MYSQL* connection = mysql_real_connect(database, host.c_str(), user.c_str(), password.c_str(), database_name.c_str(), port, nullptr, 0);
 
     if (connection == nullptr)
     {
-        const std::string error = std::string(mysql_error(database_obj));
+        const std::string error = std::string(mysql_error(database));
 
-        mysql_close(database_obj);
-        Logs::crash_log("Failed to establish connection with the database! Error code -> " + error + ".");
+        mysql_close(database);
+        Logs::crash_log("Failed to establish connection with the database. Error code -> " + error + ".");
     }
 
-    Logs::log("Successfully connected to database " + database_name + "@" + host + " as " + user + "!");
+    Logs::log("Connection to database " + database_name + "@" + host + " as " + user + " estabished.");
 }
 
 
@@ -66,13 +67,13 @@ void Database::connect_database
     Disconnect from a database.
 
     Tasks:
-        1) Verify function parameters.
+        1) Verify that the database provided is valid.
         2) Disconnect from the database.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - database / MYSQL* / Database to disconnect from.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Database::disconnect_database
@@ -80,18 +81,20 @@ void Database::disconnect_database
     MYSQL* &database
 )
 {
+    ////////////////// 1) //////////////////
     if (database == nullptr)
     {
         Logs::log("Warning: Failed to disconnect from database! The database provided is not valid.");
         return;
     }
 
-    Logs::log("Disconnecting from " + std::string(database -> db) + "@" + std::string(database -> host) + "..");
+    ////////////////// 2) //////////////////
+    Logs::log("Disconnecting from database " + std::string(database -> db) + "@" + std::string(database -> host) + "..");
 
     mysql_close(database);
     database = nullptr;
 
-    Logs::log("Successfully disconnected from the database!");
+    Logs::log("Disconnected from the database.");
 }
 
 /////////////////////////////////////////////////
@@ -100,16 +103,16 @@ void Database::disconnect_database
 
 Database::database_handler::database_handler
 (
-    MYSQL*            &database_obj,
+    MYSQL*            &database,
     const std::string &database_name,
     const std::string &host,
     const int         &port,
     const std::string &user,
     const std::string &password
 )
-    : database(database_obj)
+    : database(database)
 {
-    connect_database(database_obj, database_name, host, port, user, password);
+    connect_database(database, database_name, host, port, user, password);
 }
 
 Database::database_handler::~database_handler()
