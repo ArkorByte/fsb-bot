@@ -7,17 +7,19 @@
 #include <string>
 
 /*
-    Event that triggers when a slash command using auto complete is being used.
+    Event that triggers when a slash command parameter using auto complete is interacted with.
 
     Tasks:
         1) Add the listener to the bot.
-        2) Handle request depending on (sub)command names.
+        2) Handle the auto complete request.
+            a. Handle the request depending on the command name.
+            b. Handle the request more specifically depending on the subcommand name.
 
-    Parameters:
-        - bot      / dpp::cluster / FSB client data.
-        - database / MYSQL*       / FSB + MineWorld database.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster / Client of the bot with all related information.
+        - database  / MYSQL*       / Database used for the FSB bot and the MineWorld server.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Events::autocomplete
@@ -26,10 +28,13 @@ void Events::autocomplete
     MYSQL*       &database
 )
 {
+    ////////////////// 1) //////////////////
     bot.on_autocomplete([&bot, &database](const dpp::autocomplete_t &event)
     {
+        ////////////////// 2) //////////////////
         if (event.name == "nation")
         {
+            ////////////////// 3) //////////////////
             const std::string subcommand = event.options[0].name;
 
             if (subcommand == "claim")

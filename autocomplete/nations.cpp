@@ -21,9 +21,9 @@
             b. Return the formatted data to the user.
 
     Parameters (variable_name / type / description):
-        - bot       / dpp::cluster              / Client of the bot with all related information.
-        - database  / MYSQL*                    / Database used for the FSB bot and the MineWorld server.
-        - event     / dpp::interaction_create_t / All information about the event.
+        - bot       / dpp::cluster        / Client of the bot with all related information.
+        - database  / MYSQL*              / Database used for the FSB bot and the MineWorld server.
+        - event     / dpp::autocomplete_t / All information about the event.
 
     Returns (type + description):
         No object returned.

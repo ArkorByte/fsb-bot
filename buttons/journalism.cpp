@@ -31,10 +31,10 @@
         3) If it was the blacklist button that was originally pressed, we also blacklist the user if they are still in the nation.
 
     Parameters (variable_name / type / description):
-        - bot       / dpp::cluster              / Client of the bot with all related information.
-        - database  / MYSQL*                    / Database used for the FSB bot and the MineWorld server.
-        - event     / dpp::interaction_create_t / All information about the event.
-        - ID        / string                    / ID of the button pressed.
+        - bot       / dpp::cluster        / Client of the bot with all related information.
+        - database  / MYSQL*              / Database used for the FSB bot and the MineWorld server.
+        - event     / dpp::button_click_t / All information about the event.
+        - ID        / string              / ID of the button pressed.
 
     Returns (type + description):
         No object returned.
