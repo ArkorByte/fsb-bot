@@ -1,6 +1,8 @@
 #include "nation.hpp"
 
 #include "../../config/enumerations.hpp"
+#include "../../utils/database/database.hpp"
+#include "../../utils/text/text.hpp"
 
 #include <dpp/dpp.h>
 #include <map>
@@ -11,9 +13,14 @@
     Display information and stats of a nation.
 
     Tasks:
-        1) Verify nation ID.
-        2) Retrieve information from db and build embed.
-        3) Build select menu.
+        1)
+        2)
+            a.
+            b.
+            c.
+        3)
+            a.
+            b.
 
     Parameters:
         - bot       / dpp::cluster              / FSB client data.
@@ -30,34 +37,49 @@ void Nation::nation_info
     const dpp::interaction_create_t &event
 )
 {
-    /*std::string nation_id = std::get<std::string>(event.get_parameter("nation_id"));
+    ////////////////// 1) //////////////////
+    std::string nation_id = std::get<std::string>(event.get_parameter("nation_id"));
 
-    nation_id = Utils::Database::sanitize_input(database, nation_id);
-    Utils::Database::QueryData nations = Utils::Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
+    nation_id = Database::sanitize_input(database, nation_id);
+
+    ///////// b. /////////
+    Database::Output nations = Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nations.size() == 0)
     {
-        event.reply(dpp::message(":warning: Nation `" + nation_id + "` does not exist.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: Nation `" + nation_id + "` does not exist.").set_flags(dpp::m_ephemeral));
         return;
     }
 
+    ///////// c. /////////
+    Database::Output config = Database::db_query(database, "SELECT flags_url FROM config LIMIT 1");
+
+    if (config.size() == 0)
+    {
+        event.reply(dpp::message(":prohibited: No configuration is available to find required display elements.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    ////////////////// 3) //////////////////
+    ///////// a. /////////
     const std::string display_name = nations[0]["display_name"];
     const std::string description = nations[0]["description"];
-    const std::string flag = Utils::Text::get_nation_flag(nation_id);
+    const std::string flag = Text::get_nation_flag(nation_id);
 
-    const std::string claim_time = (nations[0]["claim_time"] == "0") ? "Never" : "<t:" + nations[0]["claim_time"] + ":f>";
-    const std::string government_type = Utils::Text::get_government_type(std::stoi(nations[0]["government_type"]));
-    const std::string ideology = Utils::Text::get_ideology(std::stoi(nations[0]["ideology"]));
-    const std::string invite_permission = Utils::Text::get_invite_permission(std::stoi(nations[0]["invite_permission"]));
-    const std::string join_condition = Utils::Text::get_join_condition(std::stoi(nations[0]["join_condition"]));
-    const std::string role_id = "<@&" + nations[0]["role_id"] + "> ||" + nations[0]["role_id"] + "||";
+    const std::string government_type = Text::get_government_type(std::stoi(nations[0]["government_type"]));
+    const std::string ideology = Text::get_ideology(std::stoi(nations[0]["ideology"]));
+    const std::string join_condition = Text::get_join_condition(std::stoi(nations[0]["join_condition"]));
+    const std::string role_id = (nations[0]["role_id"] == "0" ? "No role created yet" : "<@&" + nations[0]["role_id"] + "> ||" + nations[0]["role_id"] + "||");
 
+    ///////// b. /////////
     const dpp::embed embed = dpp::embed()
     .set_color(dpp::colors::cream_white)
     .set_title(display_name)
     .set_thumbnail("http://51.75.140.147/flags/" + nation_id + ".png")
     .add_field(":information_source: Description", description)
-    .add_field(":eye: Overview", "**Nation ID**: " + nation_id + ".\n**Flag**: " + flag + " [download from server here](http://51.75.140.147/flags/" + nation_id + ".png).\n**Role**: " + role_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Join condition**: " + join_condition + ".\n**Invite Permission**: " + invite_permission + ".");
+    .add_field(":eye: Overview", "**Nation ID**: " + nation_id + ".\n**Flag**: " + flag + " ([download from server](http://51.75.140.147/flags/" + nation_id + ".png)).\n**Role**: " + role_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Join condition**: " + join_condition + ".");
 
     const dpp::component select_menu = dpp::component()
     .add_component (
@@ -65,16 +87,14 @@ void Nation::nation_info
         .set_type(dpp::cot_selectmenu)
         .set_id("nation_info")
         .set_placeholder("Select a category of information.")
-        .add_select_option(dpp::select_option("Overview", "overview", "Display basic information about the nation.").set_emoji(u8"👁️"))
-        .add_select_option(dpp::select_option("Politics", "politics", "Display political information about the nation.").set_emoji(u8"🗣️"))
-        .add_select_option(dpp::select_option("Media", "media", "Display media/press information related to the nation.").set_emoji(u8"📰"))
-        .add_select_option(dpp::select_option("United Nations", "united_nations", "Display United Nations information related to the nation.").set_emoji(u8"🇺🇳"))
-        .add_select_option(dpp::select_option("Economy", "economy", "Display economics related to the nation.").set_emoji(u8"🪙"))
-        .add_select_option(dpp::select_option("Population", "population", "Display population stats of the nation.").set_emoji(u8"👥"))
-        .add_select_option(dpp::select_option("Warfare", "warfare", "Display military information of the nation.").set_emoji(u8"🪖"))
+        .add_select_option(dpp::select_option("Overview", "overview", "Basic information about the nation.").set_emoji(u8"👁️"))
+        .add_select_option(dpp::select_option("Politics", "politics", "Political life of the nation.").set_emoji(u8"🗣️"))
+        .add_select_option(dpp::select_option("Economy", "economy", "Financial situation of the country.").set_emoji(u8"🪙"))
+        .add_select_option(dpp::select_option("Media", "media", "Media and press stats and freedom rating.").set_emoji(u8"📰"))
+        .add_select_option(dpp::select_option("Population", "population", "Some information about the people of the nation.").set_emoji(u8"👥"))
+        .add_select_option(dpp::select_option("Warfare", "warfare", "Military capacities of the nation.").set_emoji(u8"🪖"))
+        .add_select_option(dpp::select_option("United Nations", "united_nations", "International performance of the nation.").set_emoji(u8"🇺🇳"))
     );
 
-    event.reply(dpp::message().add_embed(embed).add_component(select_menu));*/
-
-    event.reply(dpp::message(":prohibited: Coming soon!").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message().add_embed(embed).add_component(select_menu));
 }
