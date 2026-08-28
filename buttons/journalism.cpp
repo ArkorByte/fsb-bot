@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <dpp/dpp.h>
+#include <dpp/message.h>
 #include <mysql/mysql.h>
 #include <string>
 
@@ -19,7 +20,7 @@
             a. Try to get some information about the post.
             b. Verify that the user is not trying to remove a post of another person.
         2) Proceed to the removal of the post.
-            a. Delete the embed containing the post itself.
+            a. Delete the embed containing the post itself and all buttons.
             b. Modify the message to say it was removed.
 
     Parameters (variable_name / type / description):
@@ -60,11 +61,14 @@ void Buttons::journalism_delete
     ////////////////// 2) //////////////////
     ///////// a. /////////
     dpp::message message = event.command.msg;
-    message.suppress_embeds();
+    message.set_flags(message.flags | dpp::m_suppress_embeds);
+    message.components.clear();
 
     ///////// b. /////////
     message.set_content(":warning: Post deleted by their publisher.");
     bot.message_edit(message);
+
+    event.reply(dpp::message(":wastebasket: Your post has been removed.").set_flags(dpp::m_ephemeral));
 }
 
 
@@ -84,7 +88,7 @@ void Buttons::journalism_delete
             h. If they are in the same nation, verify that the user does not have a higher rank than the executer.
             i. Verify that the user does not have the same rank as the executer.
         2) We proceed the censor request.
-            a. We delete the post itself (the embed).
+            a. We delete the post itself (the embed) and remove all buttons.
             b. Edit the message content to say that the post was censored.
             c. Update nation stats in the database.
         3) If it was the blacklist button that was originally pressed, we also blacklist the user if they are still in the nation.
@@ -207,7 +211,8 @@ void Buttons::journalism_censor
     ////////////////// 2) //////////////////
     ///////// a. /////////
     dpp::message message = event.command.msg;
-    message.suppress_embeds();
+    message.set_flags(message.flags | dpp::m_suppress_embeds);
+    message.components.clear();
 
     ///////// b. /////////
     message.set_content(":warning: Post taken down by the government of " + display_name + ".");
