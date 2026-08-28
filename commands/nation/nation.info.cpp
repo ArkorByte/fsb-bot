@@ -13,14 +13,14 @@
     Display information and stats of a nation.
 
     Tasks:
-        1)
-        2)
-            a.
-            b.
-            c.
-        3)
-            a.
-            b.
+        1) Get the command parameter.
+        2) We do some verifications.
+            a. We sanitize the user input to prevent SQL injections as much as possible.
+            b. Verify that the nation exists.
+            c. Try to get some configuration from database.
+        3) Handle the information request.
+            a. Prepare some data and formatting the information.
+            b. Set the embed and select menu to be sent.
 
     Parameters:
         - bot       / dpp::cluster              / FSB client data.
@@ -45,7 +45,7 @@ void Nation::nation_info
     nation_id = Database::sanitize_input(database, nation_id);
 
     ///////// b. /////////
-    Database::Output nations = Database::db_query(database, "SELECT * FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    Database::Output nations = Database::db_query(database, "SELECT display_name, description, government_type, ideology, join_condition, role_id FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nations.size() == 0)
     {
@@ -79,7 +79,7 @@ void Nation::nation_info
     .set_title(display_name)
     .set_thumbnail("http://51.75.140.147/flags/" + nation_id + ".png")
     .add_field(":information_source: Description", description)
-    .add_field(":eye: Overview", "**Nation ID**: " + nation_id + ".\n**Flag**: " + flag + " ([download from server](http://51.75.140.147/flags/" + nation_id + ".png)).\n**Role**: " + role_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Join condition**: " + join_condition + ".");
+    .add_field(":eye: Overview", "**Display Name**: " + display_name + ".\n**Nation ID**: " + nation_id + ".\n**Flag**: " + flag + " ([download from server](http://51.75.140.147/flags/" + nation_id + ".png)).\n**Role**: " + role_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Join condition**: " + join_condition + ".");
 
     const dpp::component select_menu = dpp::component()
     .add_component (
