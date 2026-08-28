@@ -1,76 +1,83 @@
-#include "utils.parsers.hpp"
+#include "parsers.hpp"
 
-#include "../logs/utils.logs.hpp"
-#include "../text/utils.text.hpp"
+#include "../logs/logs.hpp"
+#include "../text/text.hpp"
 
-#include <filesystem>
 #include <fstream>
 #include <map>
 #include <string>
 
 /*
-    Parse a .conf / .config file.
-    Warning: If 2+ lines in the config file declare the same key, the most recent value found will be registered!
+    Parse a config file.
+    Warning: If 2+ lines in the config file declare the same key, the most recent value found will be returned.
 
     Tasks:
-        1) Verify the file path and extension.
-        2) Verify the existence of the file.
-        3) Open it and read it.
-        4) For each line:
-            - Check if the line is not empty or a comment.
-            - Get the equal sign position.
-            - Get the keys and values, and trim them.
-            - Check that the key is not empty (we do tolerate empty values).
-            - Register the data.
+        1) Try to open the config file.
+        2) Proceed to the parsing.
+            a. Check every single line of the config file.
+            b. Verify that the line is valid.
+            c. Verify that the line contains an equal sign.
+            d. If the key is valid, register the key and its value.
+        3) Free the file.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - file_path / string / Path to the config file to parse.
 
-    Returns:
-        A map containing the parsed keys and values.
+    Returns (type + description):
+        A map containing the parsed keys and their values.
 */
 std::map<std::string, std::string> Parsers::parse_config_file
 (
     const std::string &file_path
 )
 {
-    Logs::log("Parsing \"" + file_path + "\" config file.. ");
+    ////////////////// 1) //////////////////
+    Logs::log("Parsing \"" + file_path + "\" config file..");
 
-    std::ifstream file(file_path);
     std::map<std::string, std::string> output;
+    std::ifstream file(file_path);
+
+    if (!file.is_open())
+    {
+        Logs::log("Warning: Failed to open file for parsing.");
+        return output;
+    }
+
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
     std::string line;
 
-    if (file.is_open())
+    while (getline(file, line))
     {
-        while (getline(file, line))
+        ///////// b. /////////
+        if (line.empty() || line[0] == '#')
+            continue;
+
+        ///////// c. /////////
+        const size_t equal_sign = line.find("=");
+
+        if (equal_sign == std::string::npos)
         {
-            if (line.empty() || line[0] == '#')
-                continue;
-
-            const size_t equal_sign_position = line.find("=");
-
-            if (equal_sign_position == std::string::npos)
-            {
-                Logs::log("\nWarning: Ignored invalid line -> \"" + line + "\".");
-                continue;
-            }
-
-            const std::string key = Text::trim(line.substr(0, equal_sign_position));
-            const std::string value = Text::trim(line.substr(equal_sign_position + 1));
-
-            if (key.empty())
-            {
-                Logs::log("\nWarning: Ignored keyless line -> \"" + line + "\".");
-                continue;
-            }
-
-            output[key] = value;
+            Logs::log("\nWarning: Ignored invalid line -> \"" + line + "\".");
+            continue;
         }
-    }
-    else Logs::log("Failed! Couldn't open file for parsing.");
 
+        ///////// d. /////////
+        const std::string key = Text::trim(line.substr(0, equal_sign));
+        const std::string value = Text::trim(line.substr(equal_sign + 1));
+
+        if (key.empty())
+        {
+            Logs::log("\nWarning: Ignored keyless line -> \"" + line + "\".");
+            continue;
+        }
+
+        output[key] = value;
+    }
+
+    ////////////////// 3) //////////////////
     file.close();
-    Logs::log("Config file parsed successfully! " + std::to_string(output.size()) + " keys have been loaded.");
+    Logs::log("Config file parsed -> " + std::to_string(output.size()) + " keys have been loaded.");
 
     return output;
 }

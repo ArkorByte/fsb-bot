@@ -1,6 +1,6 @@
-#include "utils.database.hpp"
+#include "database.hpp"
 
-#include "../utils.hpp"
+#include "../logs/logs.hpp"
 
 #include <mysql/mysql.h>
 #include <string>
@@ -9,37 +9,37 @@
     Make a query to the database.
 
     Tasks:
-        1) Verify that database is valid.
-        2) Try to make a query to the provided database.
-        3) Retrieve the result of our query that can be data from a table.
-        4) If we have no results:
-            - Either nothing went wrong and no data was expected.
-            - Data was expected but nothing was retrieved.
-        5) Register the names of the columns for the map keys.
-        6) We register the data of the rows and associate it to the previously registered column names.
-        7) Free allocated memory.
+        1) Verify that the database provided is valid.
+        2) Try to make the query to the database.
+        3) Process the output data.
+            a. Try to get the query result.
+            b. Register the column names of the table as the map keys.
+            c. Register the rows data and associate it to all previously registered map keys.
+            d. Free allocated memory and return the output.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         - database / MYSQL* / Database to query.
         - query    / string / Query to send to the database.
 
-    Returns:
+    Returns (type + description):
         A vector list containing maps of strings that represents the output data from the query.
 */
-Database::QueryData Database::db_query
+Database::Output Database::db_query
 (
     MYSQL*            &database,
     const std::string &query
 )
 {
-    Database::QueryData output;
+    ////////////////// 1) //////////////////
+    Database::Output output;
 
     if (database == nullptr)
     {
-        Logs::log("Warning: Query \"" + query + "\" failed! Invalid database provided.");
+        Logs::log("Warning: Query \"" + query + "\" failed -> invalid database provided.");
         return output;
     }
 
+    ////////////////// 2) //////////////////
     const int query_result = mysql_query(database, query.c_str());
 
     if (query_result != 0)
@@ -48,6 +48,8 @@ Database::QueryData Database::db_query
         return output;
     }
 
+    ////////////////// 3) //////////////////
+    ///////// a. /////////
     MYSQL_RES* result = mysql_store_result(database);
 
     if (result == nullptr)
@@ -58,6 +60,7 @@ Database::QueryData Database::db_query
         return output;
     }
 
+    ///////// b. /////////
     int fields_count = mysql_num_fields(result);
     const MYSQL_FIELD* fields = mysql_fetch_fields(result);
 
@@ -66,6 +69,7 @@ Database::QueryData Database::db_query
     for (int i = 0; i < fields_count; i++)
         column_names.push_back(fields[i].name);
 
+    ///////// c. /////////
     MYSQL_ROW row;
 
     while ((row = mysql_fetch_row(result)) != nullptr)
@@ -78,6 +82,7 @@ Database::QueryData Database::db_query
         output.push_back(row_data);
     }
 
+    ///////// d. /////////
     mysql_free_result(result);
     return output;
 }

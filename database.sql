@@ -2,10 +2,11 @@ CREATE DATABASE fsb;
 USE fsb;
 
 CREATE TABLE config (
-    guild_id BIGINT PRIMARY KEY NOT NULL,
     member_role BIGINT DEFAULT 0,
-    stateless_role BIGINT DEFAULT 0,
     welcome_channel BIGINT DEFAULT 0,
+    flags_url TEXT DEFAULT '',
+    gossip_channel BIGINT DEFAULT 0,
+    gossip_role BIGINT DEFAULT 0,
     journalism_channel BIGINT DEFAULT 0
 );
 

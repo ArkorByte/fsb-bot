@@ -1,6 +1,6 @@
 #include "autocomplete.hpp"
 
-#include "../utils/utils.hpp"
+#include "../utils/database/database.hpp"
 
 #include <dpp/dpp.h>
 #include <map>
@@ -8,20 +8,24 @@
 #include <string>
 
 /*
-    Auto complete slash commands that need to display all nations that do not have any player in it.
+    Auto complete slash commands that need to display all nations with no players.
 
     Tasks:
-        1) Get the "focused value" that is the content typed by the user in the field.
-        2) Create a query that gets the list of all nations that have no members (25 max due to Discord limits), while adjusting the search using user input.
-        3) Create an auto complete entry for each result.
-        4) Return the auto complete.
+        1) Get the data to display back to the user.
+            a. Browse the list of event options looking for the focused option.
+            b. If we find a focused option, verify it's the correct one and register the data typed in it.
+            c. Format the query to make to the database, and use the data typed by the user to make a search.
+            d. Make the query to the database.
+        2) Display the data to the user.
+            a. Format all data that came from the request.
+            b. Return the formatted data to the user.
 
-    Parameters:
-        - bot      / dpp::cluster       / FSB client data.
-        - database / MYSQL*             / FSB + MineWorld database.
-        - event    / dpp::form_submit_t / Event information.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster        / Client of the bot with all related information.
+        - database  / MYSQL*              / Database used for the FSB bot and the MineWorld server.
+        - event     / dpp::autocomplete_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Autocomplete::empty_nations
@@ -31,12 +35,15 @@ void Autocomplete::empty_nations
     const dpp::autocomplete_t &event
 )
 {
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
     std::string focused_value;
 
     for (const dpp::command_option &option : event.options[0].options)
     {
         if (option.focused)
         {
+            ///////// b. /////////
             if (option.name != "nation_id")
                 return;
 
@@ -45,17 +52,22 @@ void Autocomplete::empty_nations
         }
     }
 
+    ///////// c. /////////
     std::string query = "SELECT states.nation_id, states.display_name FROM nations states LEFT JOIN nationality users ON states.nation_id = users.nation_id WHERE users.user_id IS NULL";
 
     if (!focused_value.empty())
     {
-        focused_value = Utils::Database::sanitize_input(database, focused_value);
+        focused_value = Database::sanitize_input(database, focused_value);
         query += " AND (states.nation_id LIKE '%" + focused_value + "%' OR states.display_name LIKE '%" + focused_value + "%')";
     }
 
     query += " ORDER BY states.display_name ASC LIMIT 25";
 
-    Utils::Database::QueryData empty_nations = Utils::Database::db_query(database, query);
+    ///////// d. /////////
+    Database::Output empty_nations = Database::db_query(database, query);
+
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
     dpp::interaction_response output(dpp::ir_autocomplete_reply);
 
     for (std::map<std::string, std::string> &empty_nation : empty_nations)
@@ -66,5 +78,6 @@ void Autocomplete::empty_nations
         output.add_autocomplete_choice(dpp::command_option_choice(display_name + " (" + nation_id + ")", nation_id));
     }
 
+    ///////// b. /////////
     bot.interaction_response_create(event.command.id, event.command.token, output);
 }

@@ -6,13 +6,15 @@
     Display a modal to make a post in journalism channel.
 
     Tasks:
-        1) Declare modal.
-        2) Display modal.
+        1) Create the modal.
+            a. Declare the modal and its ID.
+            b. Create all components for the modal.
+        2) Display the modal to the users.
 
-    Parameters:
-        - event / dpp::interaction_create_t / Event information.
+    Parameters (variable_name / type / description):
+        - event     / dpp::interaction_create_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Commands::journalism
@@ -20,8 +22,11 @@ void Commands::journalism
     const dpp::interaction_create_t &event
 )
 {
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
     dpp::interaction_modal_response modal("journalism_modal", "Post new article");
 
+    ///////// b. /////////
     modal.add_component
     (
         dpp::component()
@@ -72,5 +77,6 @@ void Commands::journalism
         .set_text_style(dpp::text_short)
     );
 
+    ////////////////// 2) //////////////////
     event.dialog(modal);
 }

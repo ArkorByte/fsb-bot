@@ -11,7 +11,7 @@ Discord server using the bot: https://discord.gg/zkJ75UDVEV. <br/>
 In the `./config` server, you must create the file `fsb.config` and set the following config in there. <br/>
 ``` config
 TOKEN=bot_token_here
-DB_NAME=name_of_your_database
+DB_NAME=fsb
 DB_HOST=database_address
 DB_PORT=database_port
 DB_USER=database_username
@@ -22,10 +22,11 @@ DB_PASSWORD=database_password
 ``` sql
 - Database "fsb"
 ├── Table "config"
-|  ├── guild_id BIGINT PRIMARY KEY NOT NULL
 |  ├── member_role BIGINT DEFAULT 0
-|  ├── stateless_role BIGINT DEFAULT 0
 |  ├── welcome_channel BIGINT DEFAULT 0
+|  ├── flags_url TEXT DEFAULT ''
+|  ├── gossip_channel BIGINT DEFAULT 0
+|  ├── gossip_role BIGINT DEFAULT 0
 |  ├── journalism_channel BIGINT DEFAULT 0
 ├── Table "nations"
 |  ├── nation_id VARCHAR(50) PRIMARY KEY NOT NULL

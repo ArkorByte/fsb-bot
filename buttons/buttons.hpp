@@ -11,15 +11,21 @@ namespace Buttons
     ///// journalism.cpp /////
     //////////////////////////
 
-    void journalism_censor_button
+    void journalism_delete
     (
         dpp::cluster        &bot,
-        const std::string   &custom_id,
-        MYSQL*              &database,
         dpp::button_click_t &event
     );
 
-    void journalism_blacklist_button
+    void journalism_censor
+    (
+        dpp::cluster        &bot,
+        MYSQL*              &database,
+        dpp::button_click_t &event,
+        const std::string   &ID
+    );
+
+    void journalism_blacklist
     (
         dpp::cluster        &bot,
         MYSQL*              &database,

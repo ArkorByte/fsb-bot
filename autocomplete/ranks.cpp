@@ -3,17 +3,17 @@
 #include <dpp/dpp.h>
 
 /*
-    Auto complete slash commands that need to display all available ranks.
+    Auto complete slash commands that need to display all ranks.
 
     Tasks:
-        1) Verify that it is the correct parameter being focused.
-        2) Display all possible ranks at all time.
+        1) Verify that it is the correct parameter being focused and typed into.
+        2) Display all existing ranks to the user.
 
-    Parameters:
-        - bot      / dpp::cluster       / FSB client data.
-        - event    / dpp::form_submit_t / Event information.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster        / Client of the bot with all related information.
+        - event     / dpp::autocomplete_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Autocomplete::ranks
@@ -22,9 +22,11 @@ void Autocomplete::ranks
     const dpp::autocomplete_t &event
 )
 {
+    ////////////////// 1) //////////////////
     for (const auto &option : event.options)
         if (option.focused && option.name != "new_rank") return;
 
+    ////////////////// 2) //////////////////
     bot.interaction_response_create
     (
         event.command.id,

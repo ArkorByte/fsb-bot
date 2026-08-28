@@ -7,12 +7,12 @@
 
     Tasks:
         1) Add the listener to the bot.
-        2) Handle specific messages.
+        2) Handle messages depending on the message content.
 
-    Parameters:
-        - bot / dpp::cluster / FSB client data.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster / Client of the bot with all related information.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Events::message_create
@@ -20,8 +20,10 @@ void Events::message_create
     dpp::cluster &bot
 )
 {
+    ////////////////// 1) //////////////////
     bot.on_message_create([&bot](const dpp::message_create_t &event)
     {
+        ////////////////// 2) //////////////////
         if (event.msg.content == "<@1469410323776667679>")
             event.reply(":wave: ФСБ is online and functioning!");
     });

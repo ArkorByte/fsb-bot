@@ -1,4 +1,4 @@
-#include "utils.miscellaneous.hpp"
+#include "miscellaneous.hpp"
 
 #include <string>
 #include <time.h>
@@ -8,14 +8,13 @@
     Get the timestamp of the actual time.
 
     Tasks:
-        1) Get the timestamp.
-        2) Return it.
+        1) Get the current timestamp.
 
-    Parameters:
+    Parameters (variable_name / type / description):
         No parameters.
 
-    Returns:
-        The current timestamp.
+    Returns (type + description):
+        A time_t containg the current timestamp.
 */
 time_t Miscellaneous::get_current_timestamp()
 {
@@ -29,22 +28,28 @@ time_t Miscellaneous::get_current_timestamp()
     Get the date of a timestamp.
 
     Tasks:
-        1) Get the date using the host timezone.
-        2) Get all relevant information and adjust them if necessary.
+        1) Get the time.
+            a. From the timestamp, get time data for host timezone.
+            b. Get time elements and fix year that counts from year 1900 and months as the range is (0 - 11).
+        2) Format some time elements and prepare the output.
 
     Parameters:
         - timestamp / time_t / Timestamp used to get the date from.
 
     Returns:
-        A vector list containing the date. Output format: year (YYYY), month (MM), day (DD), hour (HH), minutes (MM), seconds (SS).
+        A vector list containing the date.
+        Output format: year (YYYY), month (MM), day (DD), hour (HH), minutes (MM), seconds (SS).
 */
 std::vector<std::string> Miscellaneous::get_date_from_timestamp
 (
     const time_t &timestamp
 )
 {
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
     const struct tm date = *localtime(&timestamp);
 
+    ///////// b. /////////
     const std::string year = std::to_string(date.tm_year + 1900); // date.tm_year returns the amount of years that passed since 1900.
     const std::string month = std::to_string(date.tm_mon + 1);    // date.tm_mon returns the month number from 0 to 11.
     const std::string day = std::to_string(date.tm_mday);
@@ -52,6 +57,7 @@ std::vector<std::string> Miscellaneous::get_date_from_timestamp
     const std::string minutes = std::to_string(date.tm_min);
     const std::string seconds = std::to_string(date.tm_sec);
 
+    ////////////////// 2) //////////////////
     const std::vector<std::string> output =
     {
         year,

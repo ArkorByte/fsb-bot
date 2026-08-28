@@ -1,6 +1,6 @@
-#include "utils.files.hpp"
+#include "files.hpp"
 
-#include "../logs/utils.logs.hpp"
+#include "../logs/logs.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -10,14 +10,17 @@
     Create a new empty file.
 
     Tasks:
-        1) Verify the file path.
-        2) Verify that another file doesn't already exist.
-        3) Try to create the file.
+        1) We do some verifications.
+            a. Verify that the path contains a file name.
+            b. Verify that another file at the targeted path does not already exist.
+        2) Proceed to the file creation.
+            a. Create a new file.
+            b. Verify the file was successfully created.
 
-    Parameters:
-        - file_path / string / Targeted path + new file name.
+    Parameters (variable_name / type / description):
+        - file_path / string / Targeted path containing the new file name.
 
-    Returns:
+    Returns (type + description):
         A boolean confirming whether we successfully created the empty file or not.
 */
 bool Files::create_new_empty_file
@@ -25,34 +28,39 @@ bool Files::create_new_empty_file
     const std::string &file_path
 )
 {
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
     const bool has_filename = std::filesystem::path(file_path).has_filename();
 
     if (!has_filename)
     {
-        Logs::log("Warning: Empty file creation failed, path provided invalid -> \"" + file_path + "\".");
+        Logs::log("Warning: Empty file creation failed. Invalid path -> \"" + file_path + "\".");
         return false;
     }
 
+    ///////// b. /////////
     const bool file_exists = std::filesystem::exists(file_path);
 
     if (file_exists)
     {
-        Logs::log("Warning: Empty file creation failed, \"" + file_path + "\" already exists.");
+        Logs::log("Warning: Empty file creation failed -> \"" + file_path + "\" already exists.");
         return false;
     }
 
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
     std::ofstream file(file_path);
     const bool file_opened = file.is_open();
 
+    ///////// b. ////////
     if (file_opened)
     {
         file.close();
-        Logs::log("New empty file \"" + file_path + "\" created successfully!");
+        Logs::log("New empty file \"" + file_path + "\" created.");
         return true;
     }
 
-    Logs::log("Warning: Empty file creation failed, failed to create \"" + file_path + "\".");
-    throw std::runtime_error("rerwer");
+    Logs::log("Warning: Failed to create new empty file \"" + file_path + "\".");
     return false;
 }
 
@@ -60,20 +68,22 @@ bool Files::create_new_empty_file
 
 /*
     Write some data into a file.
-    Warning: If append is false, the file will be entirely overwritten and all previous data will be lost!
 
     Tasks:
-        1) Verify the file path.
-        2) If the file doesn't exist, we try to create it.
-        3) Open the file in the selected mode.
-        4) Write data into the file.
+        1) We do some verifications.
+            a. Verify that the path contains a file name.
+            b. Verify that the file exists, if not, create a new empty file at the desired path.
+        2) Proceed to writing into the file.
+            a. Open the file in append or overwrite mod.
+            b. Verify that the file is opened.
+            c. Insert the data into the file.
 
-    Parameters:
-        - append    / bool   / Append the file or overwrite.
+    Parameters (variable_name / type / description):
+        - append    / bool   / Append the file or overwrite the file.
         - data      / string / Data to write into the file.
-        - file_path / string / Path to the file we want to write data into.
+        - file_path / string / Path to the file to write into.
 
-    Returns:
+    Returns (type + description):
         A boolean confirming whether we successfully wrote into the file or not.
 */
 bool Files::write_file
@@ -83,6 +93,8 @@ bool Files::write_file
     const std::string &file_path
 )
 {
+    ////////////////// 1) //////////////////
+    ///////// a. /////////
     std::ofstream file;
     const bool has_filename = std::filesystem::path(file_path).has_filename();
 
@@ -92,6 +104,7 @@ bool Files::write_file
         return false;
     }
 
+    ///////// b. /////////
     const bool file_exists(std::filesystem::exists(file_path));
 
     if (!file_exists)
@@ -105,11 +118,13 @@ bool Files::write_file
         }
     }
 
+    ////////////////// 2) //////////////////
+    ///////// a. /////////
     if (append)
         file.open(file_path, std::ios::out | std::ios::app);
-    else
-        file.open(file_path, std::ios::out | std::ios::trunc);
+    else file.open(file_path, std::ios::out | std::ios::trunc);
 
+    ///////// b. /////////
     const bool is_opened = file.is_open();
 
     if (!is_opened)
@@ -118,6 +133,7 @@ bool Files::write_file
         return false;
     }
 
+    ///////// c. /////////
     file << data;
     file.close();
 

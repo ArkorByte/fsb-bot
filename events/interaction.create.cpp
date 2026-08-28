@@ -4,19 +4,22 @@
 
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
+#include <string>
 
 /*
-    Event that triggers when an interaction with FSB is made.
+    Event that triggers when a slash command has been executed.
 
     Tasks:
         1) Add the listener to the bot.
-        2) Handle command interactions only for now.
+        2) Handle the slash command execution.
+            a. Handle the request depending on the command name.
+            b. Handle the request depending on the subcommand name.
 
-    Parameters:
-        - bot      / dpp::cluster / FSB client data.
-        - database / MYSQL*       / FSB + MineWorld database.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster / Client of the bot with all related information.
+        - database  / MYSQL*       / Database used for the FSB bot and the MineWorld server.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Events::interaction_create
@@ -25,8 +28,11 @@ void Events::interaction_create
     MYSQL*       &database
 )
 {
+    ////////////////// 1) //////////////////
     bot.on_interaction_create([&bot, &database](const dpp::interaction_create_t event)
     {
+        ////////////////// 2) //////////////////
+        ///////// a. /////////
         if (event.command.get_command_name() == "ban")
             Commands::ban(bot, event);
         else if (event.command.get_command_name() == "journalism")
@@ -35,10 +41,13 @@ void Events::interaction_create
             Commands::kick(bot, event);
         else if (event.command.get_command_name() == "nation")
         {
+            ///////// b. /////////
             const std::string subcommand = event.command.get_command_interaction().options[0].name;
 
             if (subcommand == "claim")
                 Commands::Nation::claim_nation(bot, database, event);
+            else if (subcommand == "config")
+                Commands::Nation::nation_config(bot, database, event);
             else if (subcommand == "info")
                 Commands::Nation::nation_info(bot, database, event);
             else if (subcommand == "invite")

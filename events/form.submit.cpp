@@ -4,19 +4,20 @@
 
 #include <dpp/dpp.h>
 #include <mysql/mysql.h>
+#include <string>
 
 /*
     Event that triggers when a modal has been submitted.
 
     Tasks:
         1) Add the listener to the bot.
-        2) Handle request depending on custom ID.
+        2) Handle request depending on the modal ID.
 
-    Parameters:
-        - bot      / dpp::cluster / FSB client data.
-        - database / MYSQL*       / FSB + MineWorld database.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster / Client of the bot with all related information.
+        - database  / MYSQL*       / Database used for the FSB bot and the MineWorld server.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Events::form_submit
@@ -25,9 +26,13 @@ void Events::form_submit
     MYSQL*       &database
 )
 {
+    ////////////////// 1) //////////////////
     bot.on_form_submit([&bot, &database](const dpp::form_submit_t &event)
     {
-        if (event.custom_id == "journalism_modal")
+        ////////////////// 2) //////////////////
+        const std::string ID = event.custom_id;
+
+        if (ID == "journalism_modal")
             Modals::journalism(bot, database, event);
     });
 }
