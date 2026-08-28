@@ -67,8 +67,8 @@ void Nation::join_nation
     }
 
     ///////// d. /////////
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    const dpp::snowflake user_id = event.command.usr.id;
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() != 0)
     {
@@ -96,7 +96,7 @@ void Nation::join_nation
 
     if (join_condition == OPENED)
     {
-        Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + citizen + "', '" + now + "', '" + now + "')");
+        Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + std::to_string(user_id) + "', '" + nation_id + "', '" + citizen + "', '" + now + "', '" + now + "')");
         event.reply(dpp::message(flag + " You are now a citizen of " + display_name + ".").set_flags(dpp::m_ephemeral));
     }
 
@@ -105,7 +105,7 @@ void Nation::join_nation
 
     if (join_condition == ON_INVITATION)
     {
-        Database::Output invitation = Database::db_query(database, "SELECT invited_by, creation_time FROM invitations WHERE user_id = '" + user_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
+        Database::Output invitation = Database::db_query(database, "SELECT invited_by, creation_time FROM invitations WHERE user_id = '" + std::to_string(user_id) + "' AND nation_id = '" + nation_id + "' LIMIT 1");
 
         if (invitation.size() == 0)
         {
@@ -119,11 +119,11 @@ void Nation::join_nation
 
         if (invitation_time + expiration < std::stoll(now))
         {
-            Database::db_query(database, "DELETE FROM invitations WHERE user_id = '" + user_id + "' AND nation_id = '" + nation_id + "'");
+            Database::db_query(database, "DELETE FROM invitations WHERE user_id = '" + std::to_string(user_id) + "' AND nation_id = '" + nation_id + "'");
             return event.reply(dpp::message(":prohibited: Your invitation to join " + display_name + " has expired.").set_flags(dpp::m_ephemeral));
         }
 
-        Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + citizen + "', '" + now + "', '" + now + "')");
+        Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + std::to_string(user_id) + "', '" + nation_id + "', '" + citizen + "', '" + now + "', '" + now + "')");
         event.reply(dpp::message(flag + " You are now a citizen of " + display_name + ".").set_flags(dpp::m_ephemeral));
         inviter_id = invitation[0]["invited_by"];
     }
@@ -169,7 +169,7 @@ void Nation::join_nation
     .set_color(dpp::colors::light_green)
     .set_title("New Citizen")
     .set_thumbnail(flags_url + nation_id + ".png")
-    .set_description("<@" + user_id + "> just received his citizenship from " + display_name + "." + was_invited);
+    .set_description("<@" + std::to_string(user_id) + "> just received his citizenship from " + display_name + "." + was_invited);
 
     bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

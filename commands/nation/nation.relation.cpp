@@ -57,8 +57,8 @@ void Nation::nation_relation
     }
 
     ///////// b. /////////
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    const dpp::snowflake user_id = event.command.usr.id;
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {

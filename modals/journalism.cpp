@@ -48,8 +48,8 @@ void Modals::journalism
 
     ////////////////// 2) //////////////////
     ///////// a. /////////
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    const dpp::snowflake user_id = event.command.usr.id;
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
@@ -68,7 +68,7 @@ void Modals::journalism
     }
 
     ///////// c. /////////
-    Database::Output journalism = Database::db_query(database, "SELECT status FROM journalism WHERE user_id = '" + user_id + "' LIMIT 1");
+    Database::Output journalism = Database::db_query(database, "SELECT status FROM journalism WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
     int user_status = -1;
 
     if (journalism.size() != 0)
@@ -162,6 +162,6 @@ void Modals::journalism
         return;
     }
 
-    bot.message_create(dpp::message(journalism_channel, "||" + user_id + "." + nation_id + "||").add_embed(embed).add_component(buttons));
+    bot.message_create(dpp::message(journalism_channel, "||" + std::to_string(user_id) + "." + nation_id + "||").add_embed(embed).add_component(buttons));
     event.reply(dpp::message(":newspaper: Your post has been published from " + display_name + " in <#" + std::to_string(journalism_channel) + ">.").set_flags(dpp::m_ephemeral));
 }

@@ -6,6 +6,7 @@
 #include "../../utils/miscellaneous/miscellaneous.hpp"
 
 #include <dpp/dpp.h>
+#include <dpp/snowflake.h>
 #include <mysql/mysql.h>
 #include <string>
 
@@ -40,8 +41,8 @@ void Nation::nation_invite
 {
     ////////////////// 1) //////////////////
     ///////// a. /////////
-    const std::string user_id = std::to_string(std::get<dpp::snowflake>(event.get_parameter("player")));
-    const std::string executer_id = std::to_string(event.command.usr.id);
+    const dpp::snowflake user_id = std::get<dpp::snowflake>(event.get_parameter("player"));
+    const dpp::snowflake executer_id = event.command.usr.id;
 
     if (user_id == executer_id)
     {
@@ -50,7 +51,7 @@ void Nation::nation_invite
     }
 
     ///////// b. /////////
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + executer_id + "' LIMIT 1");
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(executer_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
@@ -96,7 +97,7 @@ void Nation::nation_invite
     }
 
     ///////// b. /////////
-    Database::Output invitation = Database::db_query(database, "SELECT creation_time FROM invitations WHERE user_id = '" + user_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
+    Database::Output invitation = Database::db_query(database, "SELECT creation_time FROM invitations WHERE user_id = '" + std::to_string(user_id) + "' AND nation_id = '" + nation_id + "' LIMIT 1");
     const int64_t now = Miscellaneous::get_current_timestamp();
 
     if (invitation.size() != 0)
@@ -106,13 +107,13 @@ void Nation::nation_invite
 
         if (invitation_time + expiration > now)
         {
-            event.reply(dpp::message(":prohibited: <@" + user_id + "> already has a pending invitation to join " + display_name + ".").set_flags(dpp::m_ephemeral));
+            event.reply(dpp::message(":prohibited: <@" + std::to_string(user_id) + "> already has a pending invitation to join " + display_name + ".").set_flags(dpp::m_ephemeral));
             return;
         }
-        else Database::db_query(database, "DELETE FROM invitations WHERE user_id = '" + user_id + "' AND nation_id = '" + nation_id + "'");
+        else Database::db_query(database, "DELETE FROM invitations WHERE user_id = '" + std::to_string(user_id) + "' AND nation_id = '" + nation_id + "'");
     }
 
     ///////// c. /////////
-    Database::db_query(database, "INSERT INTO invitations (user_id, nation_id, invited_by, creation_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + executer_id + "', '" + std::to_string(now) + "')");
-    event.reply(dpp::message(":envelope: An invitation is now pending for <@" + user_id + "> to join " + display_name + ".\n:warning: They have 24 hours to run `/nation join` before it expires.").set_flags(dpp::m_ephemeral));
+    Database::db_query(database, "INSERT INTO invitations (user_id, nation_id, invited_by, creation_time) VALUES ('" + std::to_string(user_id) + "', '" + nation_id + "', '" + std::to_string(executer_id) + "', '" + std::to_string(now) + "')");
+    event.reply(dpp::message(":envelope: An invitation is now pending for <@" + std::to_string(user_id) + "> to join " + display_name + ".\n:warning: They have 24 hours to run `/nation join` before it expires.").set_flags(dpp::m_ephemeral));
 }
