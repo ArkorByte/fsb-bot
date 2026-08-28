@@ -152,7 +152,7 @@ void Modals::journalism
         return;
     }
 
-    const dpp::snowflake journalism_channel = std::stoll(config[0]["journalism_channel"]);
+    const dpp::snowflake journalism_channel = dpp::snowflake(config[0]["journalism_channel"]);
     const dpp::snowflake guild_id = event.command.guild_id;
     const bool channel_exists = (dpp::find_channel(journalism_channel) -> guild_id == guild_id);
 
