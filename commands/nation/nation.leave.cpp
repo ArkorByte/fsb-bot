@@ -101,25 +101,24 @@ void Nation::leave_nation
         return;
     }
 
-    const std::string gossip_channel = config[0]["gossip_channel"];
+    const dpp::snowflake gossip_channel = dpp::snowflake(config[0]["gossip_channel"]);
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
 
     ///////// d. /////////
-    const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
-    const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
-
-    if (!channel_exists && !role_exists)
-    {
-        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation leave.");
-        return;
-    }
-
     const dpp::embed embed = dpp::embed()
     .set_color(dpp::colors::red)
     .set_title("Citizenship Renounced")
     .set_thumbnail(flags_url + nation_id + ".png")
     .set_description(rank_name + " <@" + std::to_string(user_id) + "> just left " + display_name + " and are now stateless.");
 
-    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
+    bot.message_create
+    (
+        dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed),
+        [gossip_channel](const dpp::confirmation_callback_t &callback)
+        {
+            if (callback.is_error())
+                Logs::log("Warning: Failed to send message in " + std::to_string(gossip_channel) + " with error " + callback.get_error().human_readable + " -> /nation join.");
+        }
+    );
 }

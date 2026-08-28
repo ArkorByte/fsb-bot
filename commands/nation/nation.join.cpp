@@ -24,8 +24,9 @@
             a. If the nation is set as "opened" by the government, we immediatly register the user as citizen of the nation in the database.
             b. If the nation is set as "on invitation", we verify that the user has a pending invitation.
             c. Verify that the invitation has not expired yet. If it expired, we directly delete the invitation from the database.
-            d. Get bot config to retrieve essentials information for later.
-            e. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the new citizen.
+            d. Try to give the nation role to the user.
+            e. Get bot config to retrieve essentials information for later.
+            f. Check that the "gossip" channel and role are valid, and send an embed notifying other players of the new citizen.
                We also make a "dynamic" notification in case the user joined with an invitation to precise who invited them.
 
     Parameters (variable_name / type / description):
@@ -74,7 +75,7 @@ void Nation::join_nation
     {
         ///////// e. /////////
         const std::string current_nation_id = nationality[0]["nation_id"];
-        Database::Output current = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
+        Database::Output current = Database::db_query(database, "SELECT display_name, role_id FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
 
         if (current.size() == 0)
         {
@@ -129,8 +130,17 @@ void Nation::join_nation
     }
 
     ///////// d. /////////
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role LIMIT 1");
     const dpp::snowflake guild_id = event.command.guild_id;
+    const dpp::snowflake role_id = dpp::snowflake(nations[0]["role_id"]);
+
+    bot.guild_member_add_role(guild_id, user_id, role_id, [&bot, &database, display_name, flag, guild_id, nation_id, role_id, user_id](const dpp::confirmation_callback_t &callback)
+    {
+        if (callback.is_error())
+            Logs::log("Warning: Failed to give role " + std::to_string(role_id) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> /nation join.");
+    });
+
+    ///////// e. /////////
+    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -138,20 +148,11 @@ void Nation::join_nation
         return;
     }
 
-    const std::string gossip_channel = config[0]["gossip_channel"];
+    const dpp::snowflake gossip_channel = dpp::snowflake(config[0]["gossip_channel"]);
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
 
-    ///////// e. /////////
-    const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
-    const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
-
-    if (!channel_exists && !role_exists)
-    {
-        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation join.");
-        return;
-    }
-
+    ///////// f. /////////
     std::string was_invited;
 
     if (join_condition == ON_INVITATION)
@@ -171,5 +172,13 @@ void Nation::join_nation
     .set_thumbnail(flags_url + nation_id + ".png")
     .set_description("<@" + std::to_string(user_id) + "> just received his citizenship from " + display_name + "." + was_invited);
 
-    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
+    bot.message_create
+    (
+        dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed),
+        [gossip_channel](const dpp::confirmation_callback_t &callback)
+        {
+         if (callback.is_error())
+             Logs::log("Warning: Failed to send message in " + std::to_string(gossip_channel) + " with error " + callback.get_error().human_readable + " -> /nation join.");
+        }
+    );
 }

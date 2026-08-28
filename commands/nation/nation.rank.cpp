@@ -203,51 +203,45 @@ void Nation::nation_rank
         return;
     }
 
-    const std::string gossip_channel = config[0]["gossip_channel"];
+    const dpp::snowflake gossip_channel = dpp::snowflake(config[0]["gossip_channel"]);
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
 
     ///////// d. /////////
     const dpp::snowflake guild_id = event.command.guild_id;
-
-    const bool channel_exists = (dpp::find_channel(gossip_channel) -> guild_id == guild_id);
-    const bool role_exists = (dpp::find_role(gossip_role) -> guild_id == guild_id);
-
-    if (!channel_exists && !role_exists)
-    {
-        Logs::log("Warning: Bad gossip channel " + gossip_channel + " and/or role " + gossip_role + " -> /nation rank.");
-        return;
-    }
+    dpp::embed embed = dpp::embed();
 
     if (new_rank == LEADER)
     {
-        const dpp::embed embed = dpp::embed()
-        .set_color(dpp::colors::gold)
+        embed.set_color(dpp::colors::gold)
         .set_title("Leadership Change")
         .set_thumbnail(flags_url + executer_nation_id + ".png")
         .set_description("Head of State <@" + std::to_string(executer_id) + "> of " + display_name + " resigned from their functions and named " + user_rank_name + " <@" + std::to_string(user_id) + "> as their successor.");
-
-        return bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
     }
-
-    if (new_rank == PRIME_MINISTER)
+    else if (new_rank == PRIME_MINISTER)
     {
-        const dpp::embed embed = dpp::embed()
-        .set_color(dpp::colors::gold)
-        .set_title("Prime Minister")
+        embed.set_color(dpp::colors::gold)
+        .set_title("Prime Minister Change")
         .set_thumbnail(flags_url + executer_nation_id + ".png")
         .set_description("Head of State <@" + std::to_string(executer_id) + "> named " + user_rank_name + " <@" + std::to_string(user_id) + "> as the new Prime Minister of " + display_name + ".");
+    }
+    else
+    {
+        const uint32_t color = (promotion ? dpp::colors::light_green : dpp::colors::red);
 
-        return bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
+        embed.set_color(color)
+        .set_title("Rank Modification")
+        .set_thumbnail(flags_url + executer_nation_id + ".png")
+        .set_description(executer_rank_name + " <@" + std::to_string(executer_id) + "> just " + verb + " " + user_rank_name + " <@" + std::to_string(user_id) + "> to " + rank_name + " of " + display_name + ".");
     }
 
-    const uint32_t color = (promotion ? dpp::colors::light_green : dpp::colors::red);
-
-    const dpp::embed embed = dpp::embed()
-    .set_color(color)
-    .set_title("Rank Modification")
-    .set_thumbnail(flags_url + executer_nation_id + ".png")
-    .set_description(executer_rank_name + " <@" + std::to_string(executer_id) + "> just " + verb + " " + user_rank_name + " <@" + std::to_string(user_id) + "> to " + rank_name + " of " + display_name + ".");
-
-    bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
+    bot.message_create
+    (
+        dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed),
+        [gossip_channel](const dpp::confirmation_callback_t &callback)
+        {
+            if (callback.is_error())
+                Logs::log("Warning: Failed to send message in " + std::to_string(gossip_channel) + " with error " + callback.get_error().human_readable + " -> /nation rank.");
+        }
+    );
 }

@@ -29,7 +29,7 @@ void Nation::nation_config
     const dpp::interaction_create_t &event
 )
 {
-    const std::string user_id = std::to_string(event.command.usr.id);
+    /*const std::string user_id = std::to_string(event.command.usr.id);
     Database::Output user_nationality = Database::db_query(database, "SELECT * FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
 
     if (user_nationality.size() == 0)
@@ -104,5 +104,7 @@ void Nation::nation_config
         .set_id("invite_permission_config")
     );
 
-    event.reply(dpp::message().add_embed(embed).add_component(buttons).set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message().add_embed(embed).add_component(buttons).set_flags(dpp::m_ephemeral));*/
+
+    event.reply(dpp::message(":prohibited: Coming soon!").set_flags(dpp::m_ephemeral));
 }

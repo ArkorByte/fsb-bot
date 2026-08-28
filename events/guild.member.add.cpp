@@ -51,19 +51,25 @@ void Events::guild_member_add
         }
 
         ///////// c. /////////
-        const std::string member_role = config[0]["member_role"];
-        const bool role_exists = (dpp::find_role(member_role) -> guild_id == guild_id);
+        const dpp::snowflake member_role = dpp::snowflake(config[0]["member_role"]);
 
-        if (role_exists)
-            bot.guild_member_add_role(guild_id, user_id, dpp::snowflake(member_role));
-        else Logs::log("Warning: member_role ID is not valid -> guild member add.");
+        bot.guild_member_add_role(guild_id, user_id, member_role, [member_role, user_id](const dpp::confirmation_callback_t &callback)
+        {
+            if (callback.is_error())
+                Logs::log("Warning: Failed to add role " + std::to_string(member_role) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> guild member add.");
+        });
 
         ///////// d. /////////
-        const std::string welcome_channel = config[0]["welcome_channel"];
-        const bool channel_exists = (dpp::find_channel(welcome_channel) -> guild_id == guild_id);
+        const dpp::snowflake welcome_channel = dpp::snowflake(config[0]["welcome_channel"]);
 
-        if (channel_exists)
-            bot.message_create(dpp::message(dpp::snowflake(welcome_channel), ":wave: **Welcome** to <@" + std::to_string(user_id) + "> who **just joined** the server!"));
-        else Logs::log("Warning: welcome_channel ID is not valid -> guild member add.");
+        bot.message_create
+        (
+            dpp::message(welcome_channel, ":wave: **Welcome** to <@" + std::to_string(user_id) + "> who **just joined** the server!"),
+            [welcome_channel](const dpp::confirmation_callback_t &callback)
+            {
+                if (callback.is_error())
+                    Logs::log("Warning: Failed to send message in " + std::to_string(welcome_channel) + " with error " + callback.get_error().human_readable + " -> guild member add.");
+            }
+        );
     });
 }

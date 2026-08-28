@@ -75,4 +75,6 @@ void Nation::nation_info
     );
 
     event.reply(dpp::message().add_embed(embed).add_component(select_menu));*/
+
+    event.reply(dpp::message(":prohibited: Coming soon!").set_flags(dpp::m_ephemeral));
 }
