@@ -36,7 +36,7 @@ void Commands::rules
             "- Due to **moderation concerns**, any message written in any language that is not **English**, **French** or **Russian** may be removed (*this list depends on staff proficiency in certain languages and may be updated*).\n" +
             "- Otherwise, anything that is not **EXPLICITLY marked** as prohibited is **IMPLICITLY allowed**.\n\n" +
             "### :pick: MineWorld\n" +
-            "MineWorld aims to be a **semi-anarchist** server to grant as much **freedom of actions** to the players. But to keep the server **playable** and **fair**, here are the **rules**:\n" +
+            "MineWorld aims to be a **semi-anarchist** server to grant as much **freedom of actions** to the players. But to keep the server **playable** and **fair**:\n" +
             "- Using **cheats**, **automated clients** or **custom mods** that modify the behavior of your game and/or give unfair gameplay advantages are **STRICTLY PROHIBITED**.\n" +
             "- **Optimization mods** such as OptiFine or Embeddium, and **texture packs**/**shaders** are **AUTHORIZED**.\n" +
             "- In-game **glitches** and **exploits** are NOT prohibited but **may be patched** by the development team at their own discretion.\n" +

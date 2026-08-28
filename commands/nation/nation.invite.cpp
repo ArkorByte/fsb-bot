@@ -114,5 +114,5 @@ void Nation::nation_invite
 
     ///////// c. /////////
     Database::db_query(database, "INSERT INTO invitations (user_id, nation_id, invited_by, creation_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + executer_id + "', '" + std::to_string(now) + "')");
-    event.reply(dpp::message(":envelope: An invitation is now pending for <@" + user_id + "> to join " + display_name + ".\nThey have 24 hours to run `/nation join` before it expires.").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(":envelope: An invitation is now pending for <@" + user_id + "> to join " + display_name + ".\n:warning: They have 24 hours to run `/nation join` before it expires.").set_flags(dpp::m_ephemeral));
 }

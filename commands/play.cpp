@@ -25,8 +25,8 @@ void Commands::play
         dpp::message
         (
             std::string("### How to play to Mineworld\n") +
-            "- Create a new Forge instance version `47.4.22` for Minecraft `1.20.1`.\n" +
-            "- Download the mod pack from `http://51.75.140.147/downloads/default-pack.zip`." +
+            "- Create a new Forge instance `47.4.22` for Minecraft `1.20.1`.\n" +
+            "- Download the mod pack from `http://51.75.140.147/downloads/default-pack.zip`.\n" +
             "- Join the server at the address `51.75.140.147`."
         ).set_flags(dpp::m_ephemeral)
     );

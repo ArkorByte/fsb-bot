@@ -45,8 +45,8 @@ void Nation::nation_kick
 {
     ////////////////// 1) //////////////////
     ///////// a. /////////
-    const std::string user_id = std::to_string(std::get<dpp::snowflake>(event.get_parameter("member")));
-    const std::string executer_id = std::to_string(event.command.usr.id);
+    const dpp::snowflake user_id = std::get<dpp::snowflake>(event.get_parameter("member"));
+    const dpp::snowflake executer_id = event.command.usr.id;
 
     if (executer_id == user_id)
     {
@@ -55,9 +55,9 @@ void Nation::nation_kick
     }
 
     ///////// b. /////////
-    Database::Output executer_nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + executer_id + "' LIMIT 1");
+    Database::Output executer_nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(executer_id) + "' LIMIT 1");
 
-    if (executer_id.size() == 0)
+    if (executer_nationality.size() == 0)
     {
         event.reply(dpp::message(":prohibited: You can not perform this action while being stateless.").set_flags(dpp::m_ephemeral));
         return;
@@ -74,12 +74,12 @@ void Nation::nation_kick
     }
 
     ///////// d. /////////
-    Database::Output user_nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    Database::Output user_nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
     const std::string display_name = nations[0]["display_name"];
 
     if (user_nationality.size() == 0)
     {
-        event.reply(dpp::message(":prohibited: You can not kick <@" + user_id + "> out of " + display_name + " as they are stateless.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not kick <@" + std::to_string(user_id) + "> out of " + display_name + " as they are stateless.").set_flags(dpp::m_ephemeral));
         return;
     }
 
@@ -95,11 +95,11 @@ void Nation::nation_kick
         if (user_nation.size() == 0)
         {
             Logs::log("Warning: Nation ID " + user_nation_id + " missing in database -> /nation kick.");
-            return event.reply(dpp::message(":prohibited: You can not kick <@" + user_id + "> as they are not part of " + display_name + ".").set_flags(dpp::m_ephemeral));
+            return event.reply(dpp::message(":prohibited: You can not kick <@" + std::to_string(user_id) + "> as they are not part of " + display_name + ".").set_flags(dpp::m_ephemeral));
         }
 
         const std::string user_nation_name = user_nation[0]["display_name"];
-        return event.reply(dpp::message(":prohibited: You can not kick <@" + user_id + "> out of " + display_name + " as they are part of " + user_nation_name + " as " + user_rank_name + ".").set_flags(dpp::m_ephemeral));
+        return event.reply(dpp::message(":prohibited: You can not kick <@" + std::to_string(user_id) + "> out of " + display_name + " as they are part of " + user_nation_name + " as " + user_rank_name + ".").set_flags(dpp::m_ephemeral));
     }
 
     ///////// f. /////////
@@ -115,30 +115,30 @@ void Nation::nation_kick
     ///////// g. /////////
     if (user_rank == executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + user_id + "> out of " + display_name + " as you share the same rank.").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + std::to_string(user_id) + "> out of " + display_name + " as you share the same rank.").set_flags(dpp::m_ephemeral));
         return;
     }
 
     ///////// h. /////////
     if (user_rank > executer_rank)
     {
-        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + user_id + "> out of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
+        event.reply(dpp::message(":prohibited: You can not kick " + user_rank_name + " <@" + std::to_string(user_id) + "> out of " + display_name + " as they have a higher rank than you (" + user_rank_name + " > " + executer_rank_name + ").").set_flags(dpp::m_ephemeral));
         return;
     }
 
     ////////////////// 2) //////////////////
     ///////// a. /////////
-    Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + user_id + "'");
-    event.reply(dpp::message(":hammer: <@" + user_id + "> has been kicked from " + display_name + ".").set_flags(dpp::m_ephemeral));
+    Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + std::to_string(user_id) + "'");
+    event.reply(dpp::message(":hammer: <@" + std::to_string(user_id) + "> has been kicked from " + display_name + ".").set_flags(dpp::m_ephemeral));
 
     ///////// b. /////////
     const dpp::snowflake guild_id = event.command.guild_id;
-    const std::string role_id = nations[0]["role_id"];
+    const dpp::snowflake role_id = dpp::snowflake(nations[0]["role_id"]);
 
-    bot.guild_member_remove_role(guild_id, user_id, role_id, [&role_id, &user_id](const dpp::confirmation_callback_t &callback)
+    bot.guild_member_remove_role(guild_id, user_id, role_id, [role_id, user_id](const dpp::confirmation_callback_t &callback)
     {
         if (callback.is_error())
-            Logs::log("Warning: Failed to remove role " + role_id + " to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation kick.");
+            Logs::log("Warning: Failed to remove role " + std::to_string(role_id) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> /nation kick.");
     });
 
     ///////// c. /////////
@@ -168,7 +168,7 @@ void Nation::nation_kick
     .set_color(dpp::colors::red)
     .set_title("Citizenship Removal")
     .set_thumbnail(flags_url + executer_nation_id + ".png")
-    .set_description(user_rank_name + " <@" + user_id + "> was kicked out of " + display_name + " by " + executer_rank_name + " <@" + executer_id + ">.");
+    .set_description(user_rank_name + " <@" + std::to_string(user_id) + "> was kicked out of " + display_name + " by " + executer_rank_name + " <@" + std::to_string(executer_id) + ">.");
 
     bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

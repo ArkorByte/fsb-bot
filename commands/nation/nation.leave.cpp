@@ -40,8 +40,8 @@ void Nation::leave_nation
 {
     ////////////////// 1) //////////////////
     ///////// a. /////////
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    const dpp::snowflake user_id = event.command.usr.id;
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
@@ -77,19 +77,19 @@ void Nation::leave_nation
 
     ////////////////// 2) //////////////////
     ///////// a. /////////
-    Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + user_id + "'");
+    Database::db_query(database, "DELETE FROM nationality WHERE user_id = '" + std::to_string(user_id) + "'");
     const std::string rank_name = Text::get_rank(rank);
 
     event.reply(dpp::message(":wave: You left " + display_name + " and lost your " + rank_name + " rank.").set_flags(dpp::m_ephemeral));
 
     ///////// b. /////////
     const dpp::snowflake guild_id = event.command.guild_id;
-    const std::string role_id = nations[0]["role_id"];
+    const dpp::snowflake role_id = dpp::snowflake(nations[0]["role_id"]);
 
-    bot.guild_member_remove_role(guild_id, user_id, role_id, [&role_id, &user_id](const dpp::confirmation_callback_t &callback)
+    bot.guild_member_remove_role(guild_id, user_id, role_id, [role_id, user_id](const dpp::confirmation_callback_t &callback)
     {
         if (callback.is_error())
-            Logs::log("Warning: Failed to remove role " + role_id + " to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation leave.");
+            Logs::log("Warning: Failed to remove role " + std::to_string(role_id) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> /nation leave.");
     });
 
     ///////// c. /////////
@@ -119,7 +119,7 @@ void Nation::leave_nation
     .set_color(dpp::colors::red)
     .set_title("Citizenship Renounced")
     .set_thumbnail(flags_url + nation_id + ".png")
-    .set_description(rank_name + " <@" + user_id + "> just left " + display_name + " and are now stateless.");
+    .set_description(rank_name + " <@" + std::to_string(user_id) + "> just left " + display_name + " and are now stateless.");
 
     bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

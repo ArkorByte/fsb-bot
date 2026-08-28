@@ -11,6 +11,12 @@ namespace Buttons
     ///// journalism.cpp /////
     //////////////////////////
 
+    void journalism_delete
+    (
+        dpp::cluster        &bot,
+        dpp::button_click_t &event
+    );
+
     void journalism_censor
     (
         dpp::cluster        &bot,

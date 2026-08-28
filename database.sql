@@ -6,7 +6,8 @@ CREATE TABLE config (
     welcome_channel BIGINT DEFAULT 0,
     flags_url TEXT DEFAULT '',
     gossip_channel BIGINT DEFAULT 0,
-    gossip_role BIGINT DEFAULT 0
+    gossip_role BIGINT DEFAULT 0,
+    journalism_channel BIGINT DEFAULT 0
 );
 
 CREATE TABLE nations (

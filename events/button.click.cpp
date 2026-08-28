@@ -34,5 +34,7 @@ void Events::button_click
 
         if (ID == "journalism_censor" || ID == "journalism_blacklist")
             Buttons::journalism_censor(bot, database, event, ID);
+        else if (ID == "journalism_delete")
+            Buttons::journalism_delete(bot, event);
     });
 }

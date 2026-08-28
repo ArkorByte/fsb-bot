@@ -69,14 +69,14 @@ void Nation::claim_nation
     }
 
     ///////// d. /////////
-    const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    const dpp::snowflake user_id = event.command.usr.id;
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + std::to_string(user_id) + "' LIMIT 1");
 
     if (nationality.size() != 0)
     {
         ///////// e. /////////
         const std::string current_nation_id = nationality[0]["nation_id"];
-        Database::Output current = Database::db_query(database, "SELECT display_name FROM nation_id = '" + current_nation_id + "' LIMIT 1");
+        Database::Output current = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
 
         if (current.size() == 0)
         {
@@ -96,40 +96,46 @@ void Nation::claim_nation
     const std::string leadership_changes = std::to_string(std::stoll(nations[0]["leadership_changes"]) + 1);
     const std::string now = std::to_string(Miscellaneous::get_current_timestamp());
 
-    Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + user_id + "', '" + nation_id + "', '" + leader + "', '" + now + "', '" + now + "')");
+    Database::db_query(database, "INSERT INTO nationality (user_id, nation_id, rank, last_rank_update, joining_time) VALUES ('" + std::to_string(user_id) + "', '" + nation_id + "', '" + leader + "', '" + now + "', '" + now + "')");
     Database::db_query(database, "UPDATE nations SET claim_time = '" + now + "', leadership_changes = '" + leadership_changes + "', last_leadership_change = '" + now + "' WHERE nation_id = '" + nation_id + "'");
 
     event.reply(dpp::message(flag + " You are now the Head of State of " + display_name + ".").set_flags(dpp::m_ephemeral));
 
     ///////// b. /////////
     const dpp::snowflake guild_id = event.command.guild_id;
-    dpp::snowflake role_id = dpp::snowflake(nations[0]["role_id"]);
+    const dpp::snowflake role_id = dpp::snowflake(nations[0]["role_id"]);
 
-    if (dpp::find_role(role_id) -> guild_id != guild_id)
-    {
-        const dpp::role new_role = dpp::role().set_guild_id(guild_id).set_name(flag + " " + display_name).set_color(dpp::colors::white);
-
-        bot.role_create(new_role, [&database, &display_name, &guild_id, &role_id](const dpp::confirmation_callback_t &callback)
-        {
-            if (callback.is_error())
-            {
-                Logs::log("Warning: Failed to create role for " + display_name + " with error " + callback.get_error().human_readable + " -> /nation claim.");
-                return;
-            }
-
-            role_id = std::get<dpp::role>(callback.value).id;
-            Database::db_query(database, "UPDATE nations SET role_id = '" + std::to_string(role_id) + "' WHERE guild_id = '" + std::to_string(guild_id) + "'");
-        });
-    }
-
-    ////////// c. /////////
-    bot.guild_member_add_role(guild_id, user_id, role_id, [&role_id, &user_id](const dpp::confirmation_callback_t &callback)
+    bot.guild_member_add_role(guild_id, user_id, role_id, [&bot, &database, display_name, flag, guild_id, nation_id, role_id, user_id](const dpp::confirmation_callback_t &callback)
     {
         if (callback.is_error())
-            Logs::log("Warning: Failed to give role " + std::to_string(role_id) + " to " + user_id + " with error " + callback.get_error().human_readable + " -> /nation claim.");
+        {
+            Logs::log("Warning: Failed to give role " + std::to_string(role_id) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> /nation claim.");
+
+            ///////// c. /////////
+            const dpp::role new_role = dpp::role().set_guild_id(guild_id).set_name(flag + " " + display_name).set_color(dpp::colors::white);
+
+            bot.role_create(new_role, [&bot, &database, display_name, guild_id, nation_id, user_id](const dpp::confirmation_callback_t &callback)
+            {
+                if (callback.is_error())
+                {
+                    Logs::log("Warning: Failed to create role for " + display_name + " with error " + callback.get_error().human_readable + " -> /nation claim.");
+                    return;
+                }
+
+                const dpp::snowflake role_id = std::get<dpp::role>(callback.value).id;
+                Database::db_query(database, "UPDATE nations SET role_id = '" + std::to_string(role_id) + "' WHERE nation_id = '" + nation_id + "'");
+
+                ///////// d. /////////
+                bot.guild_member_add_role(guild_id, user_id, role_id, [&bot, role_id, user_id](const dpp::confirmation_callback_t &callback)
+                {
+                    if (callback.is_error())
+                        Logs::log("Warning: Failed to give role " + std::to_string(role_id) + " to " + std::to_string(user_id) + " with error " + callback.get_error().human_readable + " -> /nation claim.");
+                });
+            });
+        }
     });
 
-    ///////// d. /////////
+    ///////// e. /////////
     Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");
 
     if (config.size() == 0)
@@ -142,7 +148,7 @@ void Nation::claim_nation
     const std::string gossip_role = config[0]["gossip_role"];
     const std::string flags_url = config[0]["flags_url"];
 
-    ///////// e. /////////
+    ///////// f. /////////
     const bool channel_exists = dpp::find_channel(gossip_channel) -> guild_id == guild_id;
     const bool role_exists = dpp::find_role(gossip_role) -> guild_id == guild_id;
 
@@ -156,7 +162,7 @@ void Nation::claim_nation
     .set_color(dpp::colors::light_green)
     .set_title("New Leadership")
     .set_thumbnail(flags_url + nation_id + ".png")
-    .set_description("Stateless <@" + user_id + "> claimed the leadership of " + display_name + " and is now its new Head of State.");
+    .set_description("Stateless <@" + std::to_string(user_id) + "> claimed the leadership of " + display_name + " and is now its new Head of State.");
 
     bot.message_create(dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed));
 }

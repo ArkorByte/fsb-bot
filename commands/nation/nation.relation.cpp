@@ -18,7 +18,8 @@
             a. Sanitize the nation ID input and verify that the targeted nation exists.
             b. Verify that user is not stateless.
             c. Try to get some information about user nation.
-            d. Verify user rank.
+            d. Verify that the targeted nation and user nation IDs do not match.
+            e. Verify user rank.
         2) We process the relation modification request.
             a. Get current relation score defined by user nation towards targeted nation. Default score is 50 (Neutrality) if none was ever defined.
             b. Get current relation score defined by targeted nation towards user nation.
@@ -57,7 +58,7 @@ void Nation::nation_relation
 
     ///////// b. /////////
     const std::string user_id = std::to_string(event.command.usr.id);
-    Database::Output nationality = Database::db_query(database, "SELECT nation_id FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
+    Database::Output nationality = Database::db_query(database, "SELECT nation_id, rank FROM nationality WHERE user_id = '" + user_id + "' LIMIT 1");
 
     if (nationality.size() == 0)
     {
@@ -76,8 +77,16 @@ void Nation::nation_relation
     }
 
     ///////// d. /////////
-    const int rank = std::stoi(nationality[0]["rank"]);
     const std::string display_name = nations[0]["display_name"];
+
+    if (nation_id == target_id)
+    {
+        event.reply(dpp::message(":prohibited: You can not change the relation of " + display_name + " with itself.").set_flags(dpp::m_ephemeral));
+        return;
+    }
+
+    ///////// e. /////////
+    const int rank = std::stoi(nationality[0]["rank"]);
     const std::string target_name = target[0]["display_name"];
 
     if (rank < MINISTER)
@@ -119,7 +128,7 @@ void Nation::nation_relation
         Database::db_query(database, "INSERT INTO relations (defining_nation, targeted_nation, score) VALUES ('" + nation_id + "', '" + target_id + "', '" + std::to_string(score) + "')");
     else Database::db_query(database, "UPDATE relations SET score = '" + std::to_string(score) + "' WHERE defining_nation = '" + nation_id + "' AND targeted_nation = '" + target_id + "'");
 
-    event.reply(dpp::message(emoji + " The relation between " + display_name + " and " + target_name + " has " + verb + " from " + current_rating + " (" + std::to_string(current_relation) + "% - " + nation_flag + " " + std::to_string(nation_relation) + "%, " + target_flag + " " + std::to_string(target_relation) + "%) to " + new_rating + " (" + std::to_string(new_relation) + "% - " + nation_flag + " " + std::to_string(score) + "%, " + target_flag + " " + std::to_string(target_relation) + "%).").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(emoji + " The relation between " + display_name + " and " + target_name + " has officially " + verb + ".\n- Before: " + current_rating + " (" + std::to_string(current_relation) + "% - " + nation_flag + " " + std::to_string(nation_relation) + "%, " + target_flag + " " + std::to_string(target_relation) + "%).\n- After: " + new_rating + " (" + std::to_string(new_relation) + "% - " + nation_flag + " " + std::to_string(score) + "%, " + target_flag + " " + std::to_string(target_relation) + "%).").set_flags(dpp::m_ephemeral));
 
     ///////// d. /////////
     Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");

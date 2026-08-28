@@ -120,6 +120,14 @@ void Modals::journalism
     const dpp::component buttons = dpp::component()
     .add_component (
         dpp::component()
+        .set_label("Delete")
+        .set_emoji(u8"🗑️")
+        .set_type(dpp::cot_button)
+        .set_style(dpp::cos_secondary)
+        .set_id("journalism_delete")
+    )
+    .add_component (
+        dpp::component()
         .set_label("Censor")
         .set_emoji(u8"🤫")
         .set_type(dpp::cot_button)
@@ -137,6 +145,12 @@ void Modals::journalism
 
     ///////// c. /////////
     Database::Output config = Database::db_query(database, "SELECT journalism_channel FROM config LIMIT 1");
+
+    if (config.size() == 0)
+    {
+        event.reply(dpp::message(":prohibited: No configuration is available to find the journalism channel.").set_flags(dpp::m_ephemeral));
+        return;
+    }
 
     const dpp::snowflake journalism_channel = std::stoll(config[0]["journalism_channel"]);
     const dpp::snowflake guild_id = event.command.guild_id;

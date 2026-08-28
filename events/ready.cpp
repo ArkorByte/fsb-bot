@@ -241,11 +241,11 @@ void Events::ready
 
             slash_commands.push_back(resolution_command);
 
-            //////////////////////////////////////////
-            ///////// Command /relationship. /////////
-            //////////////////////////////////////////
+            //////////////////////////////////////
+            ///////// Command /relation. /////////
+            //////////////////////////////////////
 
-            dpp::slashcommand relationship_command("relationship", "Display the current relationship between two nations.", bot.me.id);
+            dpp::slashcommand relationship_command("relation", "Display the current relationship between two nations.", bot.me.id);
             relationship_command.add_option(dpp::command_option(dpp::co_string, "first_nation_id", "Nation A.", true).set_auto_complete(true));
             relationship_command.add_option(dpp::command_option(dpp::co_string, "second_nation_id", "Nation B.", true).set_auto_complete(true));
             slash_commands.push_back(relationship_command);

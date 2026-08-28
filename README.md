@@ -24,10 +24,10 @@ DB_PASSWORD=database_password
 ├── Table "config"
 |  ├── member_role BIGINT DEFAULT 0
 |  ├── welcome_channel BIGINT DEFAULT 0
-|  ├── journalism_channel BIGINT DEFAULT 0
 |  ├── flags_url TEXT DEFAULT ''
 |  ├── gossip_channel BIGINT DEFAULT 0
 |  ├── gossip_role BIGINT DEFAULT 0
+|  ├── journalism_channel BIGINT DEFAULT 0
 ├── Table "nations"
 |  ├── nation_id VARCHAR(50) PRIMARY KEY NOT NULL
 |  ├── display_name VARCHAR(50) NOT NULL
