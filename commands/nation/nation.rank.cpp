@@ -166,7 +166,7 @@ void Nation::nation_rank
     const std::string emoji = (promotion ? ":arrow_up:" : ":arrow_down:");
     const std::string verb = (promotion ? "promoted" : "demoted");
 
-    event.reply(dpp::message(emoji + " <@" + user_id + "> has been " + verb + " from " + user_rank_name + " to " + rank_name + " of " + display_name + ".").set_flags(dpp::m_ephemeral));
+    event.reply(dpp::message(emoji + " <@" + std::to_string(user_id) + "> has been " + verb + " from " + user_rank_name + " to " + rank_name + " of " + display_name + ".").set_flags(dpp::m_ephemeral));
 
     ///////// b. /////////
     const std::string leadership_changes = std::to_string(std::stoi(nations[0]["leadership_changes"]) + 1);
