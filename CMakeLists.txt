@@ -8,6 +8,8 @@ include_directories (
     ${CMAKE_SOURCE_DIR}/commands
     ${CMAKE_SOURCE_DIR}/commands/nation
     ${CMAKE_SOURCE_DIR}/events
+    ${CMAKE_SOURCE_DIR}/menus
+    ${CMAKE_SOURCE_DIR}/menus/nation.info
     ${CMAKE_SOURCE_DIR}/modals
     ${CMAKE_SOURCE_DIR}/utils/database
     ${CMAKE_SOURCE_DIR}/utils/files
@@ -23,6 +25,8 @@ file(GLOB BUTTONS buttons/*.cpp)
 file(GLOB COMMANDS commands/*.cpp)
 file(GLOB COMMANDS_NATION commands/nation/*.cpp)
 file(GLOB EVENTS events/*.cpp)
+file(GLOB MENUS menus/*.cpp)
+file(GLOB MENUS_NATIONINFO menus/nation.info/*.cpp)
 file(GLOB MODALS modals/*.cpp)
 file(GLOB UTILS_DATABASE utils/database/*.cpp)
 file(GLOB UTILS_FILES utils/files/*.cpp)
@@ -38,6 +42,8 @@ set(ALL_SOURCES
     ${COMMANDS}
     ${COMMANDS_NATION}
     ${EVENTS}
+    ${MENUS}
+    ${MENUS_NATIONINFO}
     ${MODALS}
     ${UTILS_DATABASE}
     ${UTILS_FILES}

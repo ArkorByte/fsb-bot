@@ -82,6 +82,16 @@ namespace Events
     (
         dpp::cluster &bot
     );
+
+    ////////////////////////////
+    ///// select.menus.cpp /////
+    ////////////////////////////
+
+    void select_menu_click
+    (
+        dpp::cluster &bot,
+        MYSQL*       &database
+    );
 }
 
 #endif

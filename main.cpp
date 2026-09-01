@@ -85,6 +85,7 @@ int main()
     Events::autocomplete(bot, database);
     Events::form_submit(bot, database);
     Events::button_click(bot, database);
+    Events::select_menu_click(bot, database);
 
     ///////// c. /////////
     bot.start(dpp::st_wait);

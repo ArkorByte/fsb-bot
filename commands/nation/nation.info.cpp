@@ -14,20 +14,21 @@
 
     Tasks:
         1) Get the command parameter.
-        2) We do some verifications.
+        2) We do some verification.
             a. We sanitize the user input to prevent SQL injections as much as possible.
             b. Verify that the nation exists.
             c. Try to get some configuration from database.
         3) Handle the information request.
-            a. Prepare some data and formatting the information.
-            b. Set the embed and select menu to be sent.
+            a. Count the amount of members available for this nation ID.
+            b. Prepare some data and formatting the information.
+            c. Set the embed and select menu to be sent.
 
-    Parameters:
-        - bot       / dpp::cluster              / FSB client data.
-        - database  / MYSQL*                    / FSB + MineWorld database.
-        - event     / dpp::interaction_create_t / Event information.
+    Parameters (variable_name / type / description):
+        - bot       / dpp::cluster              / Client of the bot with all related information.
+        - database  / MYSQL*                    / Database used for the FSB bot and the MineWorld server.
+        - event     / dpp::interaction_create_t / All information about the event.
 
-    Returns:
+    Returns (type + description):
         No object returned.
 */
 void Nation::nation_info
@@ -45,7 +46,7 @@ void Nation::nation_info
     nation_id = Database::sanitize_input(database, nation_id);
 
     ///////// b. /////////
-    Database::Output nations = Database::db_query(database, "SELECT display_name, description, government_type, ideology, join_condition, role_id FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    Database::Output nations = Database::db_query(database, "SELECT display_name, description, claim_time, government_type, ideology, join_condition, role_id FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nations.size() == 0)
     {
@@ -64,22 +65,30 @@ void Nation::nation_info
 
     ////////////////// 3) //////////////////
     ///////// a. /////////
+    Database::Output members = Database::db_query(database, "SELECT 1 FROM nationality WHERE nation_id = '" + nation_id + "'");
+
+    ///////// b. /////////
     const std::string display_name = nations[0]["display_name"];
     const std::string description = nations[0]["description"];
+
+    const std::string flags_url = config[0]["flags_url"];
     const std::string flag = Text::get_nation_flag(nation_id);
 
+    const std::string claim_time = (nations[0]["claim_time"] == "0" ? "Never" : "<t:" + nations[0]["claim_time"] + ":f>");
     const std::string government_type = Text::get_government_type(std::stoi(nations[0]["government_type"]));
     const std::string ideology = Text::get_ideology(std::stoi(nations[0]["ideology"]));
     const std::string join_condition = Text::get_join_condition(std::stoi(nations[0]["join_condition"]));
-    const std::string role_id = (nations[0]["role_id"] == "0" ? "No role created yet" : "<@&" + nations[0]["role_id"] + "> ||" + nations[0]["role_id"] + "||");
+    const std::string member_count = std::to_string(members.size());
+    const std::string role_id = (nations[0]["role_id"] == "0" ? "No role generated yet" : "<@&" + nations[0]["role_id"] + "> ||" + nations[0]["role_id"] + "||");
 
-    ///////// b. /////////
+    ///////// c. /////////
     const dpp::embed embed = dpp::embed()
     .set_color(dpp::colors::cream_white)
     .set_title(display_name)
-    .set_thumbnail("http://51.75.140.147/flags/" + nation_id + ".png")
+    .set_thumbnail(flags_url + nation_id + ".png")
     .add_field(":information_source: Description", description)
-    .add_field(":eye: Overview", "**Display Name**: " + display_name + ".\n**Nation ID**: " + nation_id + ".\n**Flag**: " + flag + " ([download from server](http://51.75.140.147/flags/" + nation_id + ".png)).\n**Role**: " + role_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Join condition**: " + join_condition + ".");
+    .add_field(":eye: Overview", "**Display Name**: " + display_name + ".\n**Nation ID**: " + nation_id + ".\n**Government**: " + government_type + ".\n**Ideology**: " + ideology + ".\n**Member count**: " + member_count + " member(s).\n**Flag**: " + flag + " ([download from server](" + flags_url + nation_id + ".png)).\n**Role**: " + role_id + ".\n**Became active**: " + claim_time + ".\n**Join condition**: " + join_condition + ".")
+    .set_footer(dpp::embed_footer().set_icon(event.command.usr.get_avatar_url()).set_text("Requested by " + event.command.usr.username + "."));
 
     const dpp::component select_menu = dpp::component()
     .add_component (
@@ -88,13 +97,12 @@ void Nation::nation_info
         .set_id("nation_info")
         .set_placeholder("Select a category of information.")
         .add_select_option(dpp::select_option("Overview", "overview", "Basic information about the nation.").set_emoji(u8"👁️"))
-        .add_select_option(dpp::select_option("Politics", "politics", "Political life of the nation.").set_emoji(u8"🗣️"))
-        .add_select_option(dpp::select_option("Economy", "economy", "Financial situation of the country.").set_emoji(u8"🪙"))
-        .add_select_option(dpp::select_option("Media", "media", "Media and press stats and freedom rating.").set_emoji(u8"📰"))
-        .add_select_option(dpp::select_option("Population", "population", "Some information about the people of the nation.").set_emoji(u8"👥"))
+        .add_select_option(dpp::select_option("Politics, Economy & Population", "politics", "Political and economic life of the nation.").set_emoji(u8"🪙"))
+        .add_select_option(dpp::select_option("Media", "media", "Freedom of speech and press situation in the nation.").set_emoji(u8"📰"))
         .add_select_option(dpp::select_option("Warfare", "warfare", "Military capacities of the nation.").set_emoji(u8"🪖"))
         .add_select_option(dpp::select_option("United Nations", "united_nations", "International performance of the nation.").set_emoji(u8"🇺🇳"))
+        .add_select_option(dpp::select_option("Close", "close", "Delete this message.").set_emoji(u8"🚫"))
     );
 
-    event.reply(dpp::message().add_embed(embed).add_component(select_menu));
+    event.reply(dpp::message("||" + nation_id + "||").add_embed(embed).add_component(select_menu));
 }

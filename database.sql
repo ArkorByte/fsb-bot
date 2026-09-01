@@ -5,8 +5,7 @@ CREATE TABLE config (
     member_role BIGINT DEFAULT 0,
     welcome_channel BIGINT DEFAULT 0,
     flags_url TEXT DEFAULT '',
-    gossip_channel BIGINT DEFAULT 0,
-    gossip_role BIGINT DEFAULT 0,
+    world_channel BIGINT DEFAULT 0,
     journalism_channel BIGINT DEFAULT 0
 );
 

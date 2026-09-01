@@ -14,7 +14,7 @@
     Invite a player into a nation.
 
     Tasks:
-        1) We start with some basic verifications.
+        1) We start with some basic verification.
             a. Compare the user ID provided and the ID of the command executer. We deny the request if the IDs match.
             b. Try to get some information about the executer in the "nationality" table. If we get no data back, it likely means that the executer is stateless.
             c. Try to get some information about the executer nation.

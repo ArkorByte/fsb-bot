@@ -14,7 +14,7 @@
     Join a nation.
 
     Tasks:
-        1) We start with some basic verifications.
+        1) We start with some basic verification.
             a. Sanitize user input to prevent SQL injections as much as possible.
             b. Try to get some information about the nation from the database to check that it exists.
             c. Verify that the nation was not set as "closed" by the government.
@@ -49,7 +49,7 @@ void Nation::join_nation
     const std::string nation_id = Database::sanitize_input(database, std::get<std::string>(event.get_parameter("nation_id")));
 
     ///////// b. /////////
-    Database::Output nations = Database::db_query(database, "SELECT display_name, join_condition FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
+    Database::Output nations = Database::db_query(database, "SELECT display_name, join_condition, role_id FROM nations WHERE nation_id = '" + nation_id + "' LIMIT 1");
 
     if (nations.size() == 0)
     {
@@ -75,7 +75,7 @@ void Nation::join_nation
     {
         ///////// e. /////////
         const std::string current_nation_id = nationality[0]["nation_id"];
-        Database::Output current = Database::db_query(database, "SELECT display_name, role_id FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
+        Database::Output current = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
 
         if (current.size() == 0)
         {
@@ -140,7 +140,7 @@ void Nation::join_nation
     });
 
     ///////// e. /////////
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT world_channel FROM config LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -148,8 +148,7 @@ void Nation::join_nation
         return;
     }
 
-    const dpp::snowflake gossip_channel = dpp::snowflake(config[0]["gossip_channel"]);
-    const std::string gossip_role = config[0]["gossip_role"];
+    const dpp::snowflake world_channel = dpp::snowflake(config[0]["world_channel"]);
     const std::string flags_url = config[0]["flags_url"];
 
     ///////// f. /////////
@@ -174,11 +173,11 @@ void Nation::join_nation
 
     bot.message_create
     (
-        dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed),
-        [gossip_channel](const dpp::confirmation_callback_t &callback)
+        dpp::message(world_channel, "").add_embed(embed),
+        [world_channel](const dpp::confirmation_callback_t &callback)
         {
          if (callback.is_error())
-             Logs::log("Warning: Failed to send message in " + std::to_string(gossip_channel) + " with error " + callback.get_error().human_readable + " -> /nation join.");
+             Logs::log("Warning: Failed to send message in " + std::to_string(world_channel) + " with error " + callback.get_error().human_readable + " -> /nation join.");
         }
     );
 }
