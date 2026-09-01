@@ -182,7 +182,9 @@ std::string Text::get_media_freedom_rating
         return "Complicated";
     else if (score <= 85)
         return "Good";
-    else return "Very good";
+    else if (score <= 99)
+        return "Very good";
+    else return "Excellent";
 }
 
 

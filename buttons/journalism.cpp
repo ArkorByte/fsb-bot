@@ -16,7 +16,7 @@
     Delete a post made in the journalism channel.
 
     Tasks:
-        1) We do some verifications first.
+        1) We do some verification first.
             a. Try to get some information about the post.
             b. Verify that the user is not trying to remove a post of another person.
         2) Proceed to the removal of the post.
@@ -77,7 +77,7 @@ void Buttons::journalism_delete
     Censor a post made in the journalism channel.
 
     Tasks:
-        1) We do some verifications first.
+        1) We do some verification first.
             a. Verify that the executer is not stateless.
             b. Try to get some information about the executer nation.
             c. Verify that the executer is part of the government.

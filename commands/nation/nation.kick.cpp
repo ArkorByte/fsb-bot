@@ -13,7 +13,7 @@
     Kick a member from a nation.
 
     Tasks:
-        1) We start with some basic verifications.
+        1) We start with some basic verification.
             a. Compare the user ID provided and the ID of the command executer. We deny the request if the IDs match.
             b. Try to get some information about the executer in the "nationality" table. If we get no data back, it likely means that the executer is stateless.
             c. Try to get some information about the executer nation.
@@ -142,7 +142,7 @@ void Nation::nation_kick
     });
 
     ///////// c. /////////
-    Database::Output config = Database::db_query(database, "SELECT gossip_channel, gossip_role, flags_url FROM config LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT world_channel, flags_url FROM config LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -150,8 +150,7 @@ void Nation::nation_kick
         return;
     }
 
-    const dpp::snowflake gossip_channel = dpp::snowflake(config[0]["gossip_channel"]);
-    const std::string gossip_role = config[0]["gossip_role"];
+    const dpp::snowflake world_channel = dpp::snowflake(config[0]["world_channel"]);
     const std::string flags_url = config[0]["flags_url"];
 
     ///////// d. /////////
@@ -163,11 +162,11 @@ void Nation::nation_kick
 
     bot.message_create
     (
-        dpp::message(gossip_channel, "||<@&" + gossip_role + ">||").add_embed(embed),
-        [gossip_channel](const dpp::confirmation_callback_t &callback)
+        dpp::message(world_channel, "").add_embed(embed),
+        [world_channel](const dpp::confirmation_callback_t &callback)
         {
             if (callback.is_error())
-                Logs::log("Warning: Failed to send message in " + std::to_string(gossip_channel) + " with error " + callback.get_error().human_readable + " -> /nation kick.");
+                Logs::log("Warning: Failed to send message in " + std::to_string(world_channel) + " with error " + callback.get_error().human_readable + " -> /nation kick.");
         }
     );
 }

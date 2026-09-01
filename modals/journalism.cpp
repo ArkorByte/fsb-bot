@@ -14,7 +14,7 @@
 
     Tasks:
         1) Get the modal field values.
-        2) We do some verifications process.
+        2) We do some verification process.
             a. Verify that the user is not stateless.
             b. Try to get some information and stats about the nation.
             c. Try to get the current authorization of the user in case the whitelist or the blacklist is enable.

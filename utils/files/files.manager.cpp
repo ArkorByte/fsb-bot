@@ -10,7 +10,7 @@
     Create a new empty file.
 
     Tasks:
-        1) We do some verifications.
+        1) We do some verification.
             a. Verify that the path contains a file name.
             b. Verify that another file at the targeted path does not already exist.
         2) Proceed to the file creation.
@@ -70,7 +70,7 @@ bool Files::create_new_empty_file
     Write some data into a file.
 
     Tasks:
-        1) We do some verifications.
+        1) We do some verification.
             a. Verify that the path contains a file name.
             b. Verify that the file exists, if not, create a new empty file at the desired path.
         2) Proceed to writing into the file.

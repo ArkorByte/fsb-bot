@@ -11,7 +11,7 @@
 
     Tasks:
         1) Get command parameters.
-        2) We do some verifications.
+        2) We do some verification.
             a. Verify that the user and executer IDs do not match.
             b. Verify that the executer is not trying to ban the bot.
             c. Try to get some information about the user within the guild.
