@@ -75,7 +75,7 @@ void Nation::join_nation
     {
         ///////// e. /////////
         const std::string current_nation_id = nationality[0]["nation_id"];
-        Database::Output current = Database::db_query(database, "SELECT display_name FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
+        Database::Output current = Database::db_query(database, "SELECT display_name, rank FROM nations WHERE nation_id = '" + current_nation_id + "' LIMIT 1");
 
         if (current.size() == 0)
         {
@@ -140,7 +140,7 @@ void Nation::join_nation
     });
 
     ///////// e. /////////
-    Database::Output config = Database::db_query(database, "SELECT world_channel FROM config LIMIT 1");
+    Database::Output config = Database::db_query(database, "SELECT world_channel, flags_url FROM config LIMIT 1");
 
     if (config.size() == 0)
     {
@@ -156,7 +156,7 @@ void Nation::join_nation
 
     if (join_condition == ON_INVITATION)
     {
-        Database::Output inviter = Database::db_query(database, "SELECT rank WHERE user_id = '" + inviter_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
+        Database::Output inviter = Database::db_query(database, "SELECT rank FROM nationality WHERE user_id = '" + inviter_id + "' AND nation_id = '" + nation_id + "' LIMIT 1");
 
         if (inviter.size() != 0)
         {
