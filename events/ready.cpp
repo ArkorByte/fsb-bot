@@ -133,6 +133,23 @@ void Events::ready
 
             slash_commands.push_back(laws_command);
 
+            ///////////////////////////////////
+            ///////// Command /music. /////////
+            ///////////////////////////////////
+
+            dpp::slashcommand music_command("music", "Commands related to playing music.", bot.me.id);
+
+                ///// Subcommand /music play. /////
+                dpp::command_option music_play(dpp::command_option(dpp::co_sub_command, "play", "Play some music."));
+                music_play.add_option(dpp::command_option(dpp::co_string, "youtube_url", "URL to the YouTube video.", true).set_auto_complete(true));
+                music_command.add_option(music_play);
+
+                ///// Subcommand /music stop. /////
+                dpp::command_option music_stop(dpp::command_option(dpp::co_sub_command, "stop", "Stop playing music."));
+                music_command.add_option(music_stop);
+
+            slash_commands.push_back(music_command);
+
             //////////////////////////////////
             ///////// Command /mute. /////////
             //////////////////////////////////
